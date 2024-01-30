@@ -184,13 +184,15 @@ RobotPositionFrame = Frame(master=RobotControlFrame, width=100)
 XPosFrame = Frame(master=RobotPositionFrame, width=100)
 XPosLable = Label(master=XPosFrame, text=' X-Position: ',
                                  font=("Courier", 12, 'bold')).pack(side=LEFT, ipadx=0, padx=0, pady=0)
-XPosEntry = Entry(XPosFrame).pack(side=LEFT)
+XPosEntry = Entry(XPosFrame)
+XPosEntry.pack(side=LEFT)
 XPosFrame.pack(side=TOP)
 
 YPosFrame = Frame(master=RobotPositionFrame, width=100)
 YPosLabel = Label(master=YPosFrame, text=' Y-Position: ',
                                  font=("Courier", 12, 'bold')).pack(side=LEFT, ipadx=0, padx=0, pady=0)
-YPosEntry = Entry(YPosFrame).pack(side=LEFT)
+YPosEntry = Entry(YPosFrame)
+YPosEntry.pack(side=LEFT)
 YPosFrame.pack(side=TOP)
 
 MoveRobotButton = Button(RobotControlFrame,
