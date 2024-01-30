@@ -12,7 +12,9 @@ new = [] # Each shapes of canvas
 created = [] # Temporary list to hold info on every drag
 shape = "Line" # Shape to draw
 color = "Black" # Color of the shape
-line_width = 3 # Width of the line shape
+line_width = 1 # Width of the line shape
+CANVAS_WIDTH = 800
+CANVAS_HEIGHT = 600
 
 # All the functions and logics go here
 #Capture Motions on every mouse position change
@@ -54,8 +56,6 @@ def createElms():
         a = canvas.create_rectangle(prev_x, prev_y, x, y)
     elif shape == "Oval":
         a = canvas.create_oval(prev_x, prev_y, x, y)
-    elif shape == "Arc":
-        a = canvas.create_arc(prev_x, prev_y, x, y, style=ARC)
     elif shape == "Line":
         a = canvas.create_line(prev_x, prev_y, x, y,
                                width=line_width,
@@ -106,8 +106,7 @@ def clearCanvas(e=""):
 
 root = Tk()
 root.title("Bad Handwriting Who?")
-CANVAS_WIDTH = 800
-CANVAS_HEIGHT = 600
+
 root.minsize(CANVAS_WIDTH, CANVAS_HEIGHT) #Minimum Size of the window
 # All Widgets here such as canvas, buttons etc
 
@@ -125,7 +124,7 @@ canvas.bind("<Motion>", captureMotion) #Mouse Motion
 frame = Frame(root)
 frame.pack(side=TOP)
 radiovalue = StringVar()
-geometry_shapes = ["Line", "Rectangle", "Arc", "Oval", "Text", "G-code", "Paint", "Erase", "Arrow"]
+geometry_shapes = ["Line", "Rectangle", "Oval", "Text", "G-code", "Paint", "Erase", "Arrow"]
 radiovalue.set("Line")  # Default Select
 
 # Manupulates Radios from the list
@@ -137,7 +136,7 @@ Button(root, text="Clear Canvas", font="comicsans 12 bold",
        command=clearCanvas).pack(side=TOP, padx=6)
 
 #Text Input
-TextParametersFrame = Frame(master=root, width=100)
+TextParametersFrame = Frame(master=root)
 TextLableLable = Label(master=TextParametersFrame, text=' Your Text: ',
                                  font=("Courier", 12, 'bold')).pack(side='left', ipadx=0, padx=0, pady=0)
 
