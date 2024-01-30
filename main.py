@@ -64,9 +64,11 @@ def createElms():
     elif shape == "Text":
         a = canvas.create_text(x, y, text=TextValueEntry.get(), font=('comicsans',FontSizeEntry.get(), 'bold'))
     elif shape == "Bitmap":
-        img = ImageTk.PhotoImage(Image.open(BitmapValueEntry.get()))
-        #img = BitmapImage(file = "Example Image.bmp", foreground="red")
-        a = canvas.create_image(x, y, anchor=CENTER, image=img, state=NORMAL)
+        global img
+        OG_img = Image.open(BitmapValueEntry.get())
+        OG_img= OG_img.resize(( max(abs(x-prev_x),10), max(abs(y-prev_y),10) ))
+        img = ImageTk.PhotoImage(OG_img)
+        a = canvas.create_image(x, y, anchor=NW, image=img, state=NORMAL)
     elif shape == "Paint":
         a = canvas.create_oval(x-2, y-2, x+2, y+2, fill="Black")
     elif shape == "Erase":
