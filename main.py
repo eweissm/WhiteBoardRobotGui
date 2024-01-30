@@ -64,8 +64,9 @@ def createElms():
     elif shape == "Text":
         a = canvas.create_text(x, y, text=TextValueEntry.get(), font=('comicsans',FontSizeEntry.get(), 'bold'))
     elif shape == "Bitmap":
-        img= ImageTk.PhotoImage(Image.open(BitmapValueEntry.get()))
-        a = canvas.create_image(abs(prev_x-x), abs(prev_y-y), image=img)
+        img = ImageTk.PhotoImage(Image.open(BitmapValueEntry.get()))
+        #img = BitmapImage(file = "Example Image.bmp", foreground="red")
+        a = canvas.create_image(x, y, anchor=CENTER, image=img, state=NORMAL)
     elif shape == "Paint":
         a = canvas.create_oval(x-2, y-2, x+2, y+2, fill="Black")
     elif shape == "Erase":
@@ -129,7 +130,7 @@ radiovalue = StringVar()
 geometry_shapes = ["Line", "Rectangle", "Oval", "Text", "Bitmap", "Paint", "Erase", "Arrow"]
 radiovalue.set("Line")  # Default Select
 
-# Manupulates Radios from the list
+# Manipulates Radios from the list
 for shape in geometry_shapes:
     radio = Radiobutton(frame, text=shape, variable=radiovalue, font="comicsans     12 bold", value=shape, command=shapechanger).pack(side=LEFT, padx=6,pady=3)
 
