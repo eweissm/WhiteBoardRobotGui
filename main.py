@@ -11,6 +11,7 @@ y = 0
 created_element_info = [] #list of all shapes objects for saving drawing
 new = [] # Each shapes of canvas
 created = [] # Temporary list to hold info on every drag
+image_elements = []
 shape = "Line" # Shape to draw
 color = "Black" # Color of the shape
 line_width = 1 # Width of the line shape
@@ -64,11 +65,11 @@ def createElms():
     elif shape == "Text":
         a = canvas.create_text(x, y, text=TextValueEntry.get(), font=('comicsans',FontSizeEntry.get(), 'bold'))
     elif shape == "Bitmap":
-        global img
-        OG_img = Image.open(BitmapValueEntry.get())
-        OG_img= OG_img.resize(( int(max(abs(x-prev_x),10)*2), int(max(abs(y-prev_y),10)*2) ))
-        img = ImageTk.PhotoImage(OG_img)
-        a = canvas.create_image(prev_x,prev_y, anchor=CENTER, image=img, state=NORMAL)
+        global image_elements
+        OG_img = Image.open(BitmapValueEntry.get()) # get image in PIL form
+        OG_img= OG_img.resize(( int(max(abs(x-prev_x),10)*2), int(max(abs(y-prev_y),10)*2) )) #resize image
+        image_elements.append(ImageTk.PhotoImage(OG_img)) # cast into tk image format
+        a = canvas.create_image(prev_x,prev_y, anchor=CENTER, image=image_elements[-1], state=NORMAL)
     elif shape == "Paint":
         a = canvas.create_oval(x-2, y-2, x+2, y+2, fill="Black")
     elif shape == "Erase":
