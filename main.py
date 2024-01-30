@@ -101,7 +101,7 @@ def clearCanvas(e=""):
 
 
 root = Tk()
-root.title("Drawing Pad")
+root.title("Bad Handwriting Who?")
 root.minsize(600, 300) #Minimum Size of the window
 # All Widgets here such as canvas, buttons etc
 
@@ -136,12 +136,12 @@ TextParametersFrame = Frame(master=root, width=100)
 TextLableLable = Label(master=TextParametersFrame, text=' Your Text: ',
                                  font=("Courier", 12, 'bold')).pack(side='left', ipadx=0, padx=0, pady=0)
 
-TextValueEntry = Entry(TextParametersFrame)
+TextValueEntry = Entry(TextParametersFrame, width= 60)
 TextValueEntry.pack(side=LEFT)
 
 FontSizeLabel = Label(master=TextParametersFrame, text=' Text Size: ',
                                  font=("Courier", 12, 'bold')).pack(side='left', ipadx=0, padx=0, pady=0)
-FontSizeEntry = Entry(TextParametersFrame)
+FontSizeEntry = Entry(TextParametersFrame, width= 5)
 FontSizeEntry.pack(side=LEFT)
 
 TextValueEntry.insert(0,"Type Text Here")
@@ -153,7 +153,7 @@ TextParametersFrame.pack(fill=BOTH, side=TOP, expand=True)
 GcodeInputFrame = Frame(master=root, width=100)
 GcodeLableLable = Label(master=GcodeInputFrame, text=' Gcode Address: ',
                                  font=("Courier", 12, 'bold')).pack(side='left', ipadx=0, padx=0, pady=0)
-GcodeValueEntry = Entry(GcodeInputFrame)
+GcodeValueEntry = Entry(GcodeInputFrame, width= 60)
 GcodeValueEntry.pack(side=LEFT)
 GcodeInputFrame.pack(fill=BOTH, side=TOP, expand=True)
 
