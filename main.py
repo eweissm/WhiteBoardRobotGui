@@ -61,7 +61,9 @@ def createElms():
                                width=line_width,
                                smooth=TRUE, splinesteps=3)
     elif shape == "Text":
-        a = canvas.create_text(x, y, text="Hello World")
+        a = canvas.create_text(x, y, text=TextValueEntry.get())
+    elif shape == "G-code":
+        a = canvas.create_text(x, y, text="WIP")
     return a
 
 # Create shapes on mouse dragging and resize and show the shapes on the canvas
@@ -112,7 +114,7 @@ canvas.bind("<Motion>", captureMotion) #Mouse Motion
 frame = Frame(root)
 frame.pack(side=TOP)
 radiovalue = StringVar()
-geometry_shapes = ["Line", "Rectangle", "Arc", "Oval", "Text"]
+geometry_shapes = ["Line", "Rectangle", "Arc", "Oval", "Text", "G-code"]
 radiovalue.set("Line")  # Default Select
 
 # Manupulates Radios from the list
@@ -133,6 +135,9 @@ FontSizeLabel = Label(master=TextParametersFrame, text=' Text Size: ',
                                  font=("Courier", 12, 'bold')).pack(side='left', ipadx=0, padx=0, pady=0)
 FontSizeEntry = Entry(TextParametersFrame).pack(side=LEFT)
 
+TextValueEntry.insert("Type Text Here")
+FontSizeLabel.insert(12)
+
 TextParametersFrame.pack(fill=BOTH, side=TOP, expand=True)
 
 #Gcode Input
@@ -142,11 +147,57 @@ GcodeLableLable = Label(master=GcodeInputFrame, text=' Gcode Address: ',
 GcodeValueEntry = Entry(GcodeInputFrame).pack(side=LEFT)
 GcodeInputFrame.pack(fill=BOTH, side=TOP, expand=True)
 
+#Robot controls Buttons
+RobotControlFrame = Frame(master=root, width=100)
 
+ZeroButton = Button(RobotControlFrame,
+                                   text="Zero Robot Position",
+                                   command=clearCanvas,
+                                   height=4,
+                                   fg="black",
+                                   width=20,
+                                   bd=5,
+                                   activebackground='green'
+                                   ).pack(side=LEFT)
 
+PrintToBoardButton = Button(RobotControlFrame,
+                                   text="Print Canvas To Board",
+                                   command=clearCanvas,
+                                   height=4,
+                                   fg="black",
+                                   width=20,
+                                   bd=5,
+                                   activebackground='green'
+                                   ).pack(side=LEFT)
+
+RobotPositionFrame = Frame(master=RobotControlFrame, width=100)
+XPosFrame = Frame(master=RobotPositionFrame, width=100)
+XPosLable = Label(master=XPosFrame, text=' X-Position: ',
+                                 font=("Courier", 12, 'bold')).pack(side=LEFT, ipadx=0, padx=0, pady=0)
+XPosEntry = Entry(XPosFrame).pack(side=LEFT)
+XPosFrame.pack(side=TOP)
+
+YPosFrame = Frame(master=RobotPositionFrame, width=100)
+YPosLabel = Label(master=YPosFrame, text=' Y-Position: ',
+                                 font=("Courier", 12, 'bold')).pack(side=LEFT, ipadx=0, padx=0, pady=0)
+YPosEntry = Entry(YPosFrame).pack(side=LEFT)
+YPosFrame.pack(side=TOP)
+
+MoveRobotButton = Button(RobotControlFrame,
+                                   text="Go To Coords",
+                                   command=clearCanvas,
+                                   height=4,
+                                   fg="black",
+                                   width=20,
+                                   bd=5,
+                                   activebackground='green'
+                                   ).pack(side=LEFT)
+
+RobotPositionFrame.pack(side=LEFT)
+RobotControlFrame.pack(fill=BOTH, side=TOP, expand=True)
 # Status Bar
 status = StringVar()
 status.set("Position : x - 0 , y - 0")
 statusbar = Label(root, textvariable=status, anchor="w", relief=SUNKEN)
-statusbar.pack(side=TOP, fill=X)
+statusbar.pack(side=BOTTOM, fill=X)
 root.mainloop()
