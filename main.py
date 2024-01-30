@@ -11,7 +11,7 @@ y = 0
 created_element_info = [] #list of all shapes objects for saving drawing
 new = [] # Each shapes of canvas
 created = [] # Temporary list to hold info on every drag
-image_elements = []
+image_elements = [] #list contains all image objects used
 shape = "Line" # Shape to draw
 color = "Black" # Color of the shape
 line_width = 1 # Width of the line shape
@@ -103,10 +103,11 @@ def deleteUnwanted(element):
 
 # Clear the Canvas
 def clearCanvas(e=""):
-    global created_element_info, canvas, created, new
+    global created_element_info, canvas, created, new, image_elements
     canvas.delete("all")
     created_element_info = []
     created = []
+    image_elements = []
     new = []
 
 
