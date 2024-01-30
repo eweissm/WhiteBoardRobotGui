@@ -65,12 +65,14 @@ def createElms():
     elif shape == "G-code":
         a = canvas.create_text(x, y, text="WIP")
     elif shape == "Paint":
-        a = canvas.create_oval(x-1, y-1, x+1, y+1, fill="Black")
+        a = canvas.create_oval(x-2, y-2, x+2, y+2, fill="Black")
+    elif shape == "Erase":
+        a = canvas.create_oval(x - 4, y - 4, x + 4, y + 4, fill="White", outline="White" )
     return a
 
 # Create shapes on mouse dragging and resize and show the shapes on the canvas
 def drawShapesOnDragging(e=""):
-    global x, y
+    global x, y, element
     try:
         # Update current Position
         x = e.x
@@ -78,7 +80,7 @@ def drawShapesOnDragging(e=""):
 
         #Generate Element
         element = createElms()
-        if shape != "Paint":
+        if shape != "Paint" and shape != "Erase" :
             deleteUnwanted(element) # Delete unwanted shapes
     except Exception as e:
         tmsg.showerror("Some Error Occurred!", e)
@@ -97,14 +99,15 @@ def clearCanvas(e=""):
     created = []
     new = []
 
+
 root = Tk()
 root.title("Drawing Pad")
 root.minsize(600, 300) #Minimum Size of the window
 # All Widgets here such as canvas, buttons etc
 
 # Canvas
-CANVAS_WIDTH = 600
-CANVAS_HEIGHT = 400
+CANVAS_WIDTH = 800
+CANVAS_HEIGHT = 600
 canvas = Canvas(root, width=CANVAS_WIDTH, height=CANVAS_HEIGHT, bg="white")
 canvas.pack()
 
@@ -117,7 +120,7 @@ canvas.bind("<Motion>", captureMotion) #Mouse Motion
 frame = Frame(root)
 frame.pack(side=TOP)
 radiovalue = StringVar()
-geometry_shapes = ["Line", "Rectangle", "Arc", "Oval", "Text", "G-code", "Paint"]
+geometry_shapes = ["Line", "Rectangle", "Arc", "Oval", "Text", "G-code", "Paint", "Erase"]
 radiovalue.set("Line")  # Default Select
 
 # Manupulates Radios from the list
