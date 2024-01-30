@@ -35,7 +35,7 @@ def shapechanger(e=""):
 
 # After Every drawing create info of drawing and add the element to new list and assign empty list to created
 def generateShapesObj(e=""):
-    global created,created_element_info
+    global created, created_element_info
     new.append(created[-1])
     created = []
     created_element_info_obj = {
@@ -60,11 +60,13 @@ def createElms():
         a = canvas.create_line(prev_x, prev_y, x, y,
                                width=line_width,
                                smooth=TRUE, splinesteps=3)
+    elif shape == "Text":
+        a = canvas.create_text(x, y, text="Hello World")
     return a
 
 # Create shapes on mouse dragging and resize and show the shapes on the canvas
 def drawShapesOnDragging(e=""):
-    global x,y
+    global x, y
     try:
         # Update current Position
         x = e.x
@@ -92,7 +94,7 @@ def clearCanvas(e=""):
 
 root = Tk()
 root.title("Drawing Pad")
-root.minsize(600,300) #Minimum Size of the window
+root.minsize(600, 300) #Minimum Size of the window
 # All Widgets here such as canvas, buttons etc
 
 # Canvas
@@ -108,10 +110,10 @@ canvas.bind("<B1-Motion>", drawShapesOnDragging) #Capture Mouse left click + mov
 canvas.bind("<ButtonRelease-1>", generateShapesObj) #When Mouse left click release
 canvas.bind("<Motion>", captureMotion) #Mouse Motion
 frame = Frame(root)
-frame.pack(side=BOTTOM)
+frame.pack(side=TOP)
 radiovalue = StringVar()
-geometry_shapes = ["Line", "Rectangle", "Arc", "Oval"]
-radiovalue.set("Line") #Default Select
+geometry_shapes = ["Line", "Rectangle", "Arc", "Oval", "Text"]
+radiovalue.set("Line")  # Default Select
 
 # Manupulates Radios from the list
 for shape in geometry_shapes:
@@ -119,11 +121,32 @@ for shape in geometry_shapes:
 
 #Buttons
 Button(frame, text="Clear", font="comicsans 12 bold",
-       command=clearCanvas).pack(side=BOTTOM, padx=6)
+       command=clearCanvas).pack(side=TOP, padx=6)
+
+#Text Input
+TextParametersFrame = Frame(master=root, width=100)
+TextLableLable = Label(master=TextParametersFrame, text=' Your Text: ',
+                                 font=("Courier", 12, 'bold')).pack(side='left', ipadx=0, padx=0, pady=0)
+TextValueEntry = Entry(TextParametersFrame).pack(side=LEFT)
+
+FontSizeLabel = Label(master=TextParametersFrame, text=' Text Size: ',
+                                 font=("Courier", 12, 'bold')).pack(side='left', ipadx=0, padx=0, pady=0)
+FontSizeEntry = Entry(TextParametersFrame).pack(side=LEFT)
+
+TextParametersFrame.pack(fill=BOTH, side=TOP, expand=True)
+
+#Gcode Input
+GcodeInputFrame = Frame(master=root, width=100)
+GcodeLableLable = Label(master=GcodeInputFrame, text=' Gcode Address: ',
+                                 font=("Courier", 12, 'bold')).pack(side='left', ipadx=0, padx=0, pady=0)
+GcodeValueEntry = Entry(GcodeInputFrame).pack(side=LEFT)
+GcodeInputFrame.pack(fill=BOTH, side=TOP, expand=True)
+
+
 
 # Status Bar
 status = StringVar()
 status.set("Position : x - 0 , y - 0")
 statusbar = Label(root, textvariable=status, anchor="w", relief=SUNKEN)
-statusbar.pack(side=BOTTOM, fill=X)
+statusbar.pack(side=TOP, fill=X)
 root.mainloop()
