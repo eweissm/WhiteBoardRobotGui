@@ -1,5 +1,6 @@
 from tkinter import *
 import tkinter.messagebox as tmsg
+from PIL import Image,ImageTk
 
 # Starting point of mouse dragging or shapes
 prev_x = 0 
@@ -62,8 +63,9 @@ def createElms():
                                smooth=TRUE, splinesteps=3)
     elif shape == "Text":
         a = canvas.create_text(x, y, text=TextValueEntry.get(), font=('comicsans',FontSizeEntry.get(), 'bold'))
-    elif shape == "G-code":
-        a = canvas.create_text(x, y, text="WIP")
+    elif shape == "Bitmap":
+        img= ImageTk.PhotoImage(Image.open(BitmapValueEntry.get()))
+        a = canvas.create_image(abs(prev_x-x), abs(prev_y-y), image=img)
     elif shape == "Paint":
         a = canvas.create_oval(x-2, y-2, x+2, y+2, fill="Black")
     elif shape == "Erase":
@@ -124,7 +126,7 @@ canvas.bind("<Motion>", captureMotion) #Mouse Motion
 frame = Frame(root)
 frame.pack(side=TOP)
 radiovalue = StringVar()
-geometry_shapes = ["Line", "Rectangle", "Oval", "Text", "G-code", "Paint", "Erase", "Arrow"]
+geometry_shapes = ["Line", "Rectangle", "Oval", "Text", "Bitmap", "Paint", "Erase", "Arrow"]
 radiovalue.set("Line")  # Default Select
 
 # Manupulates Radios from the list
@@ -154,12 +156,15 @@ FontSizeEntry.insert(0,12)
 TextParametersFrame.pack(fill=BOTH, side=TOP, expand=True)
 
 #Gcode Input
-GcodeInputFrame = Frame(master=root, width=100)
-GcodeLableLable = Label(master=GcodeInputFrame, text=' Gcode Address: ',
+BitmapInputFrame = Frame(master=root, width=100)
+BitmapLable = Label(master=BitmapInputFrame, text=' Bitmap Address: ',
                                  font=("Courier", 12, 'bold')).pack(side='left', ipadx=0, padx=0, pady=0)
-GcodeValueEntry = Entry(GcodeInputFrame, width= 60)
-GcodeValueEntry.pack(side=LEFT)
-GcodeInputFrame.pack(fill=BOTH, side=TOP, expand=True)
+BitmapValueEntry = Entry(BitmapInputFrame, width= 60)
+BitmapValueEntry.pack(side=LEFT)
+
+BitmapValueEntry.insert(0,'Example Image.bmp')
+
+BitmapInputFrame.pack(fill=BOTH, side=TOP, expand=True)
 
 #Robot controls Buttons
 RobotControlFrame = Frame(master=root, width=100)
