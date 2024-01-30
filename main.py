@@ -68,6 +68,10 @@ def createElms():
         a = canvas.create_oval(x-2, y-2, x+2, y+2, fill="Black")
     elif shape == "Erase":
         a = canvas.create_oval(x - 4, y - 4, x + 4, y + 4, fill="White", outline="White" )
+    elif shape == "Arrow":
+        a = canvas.create_line(prev_x, prev_y, x, y,
+                               width=line_width,
+                               smooth=TRUE, splinesteps=3,arrow = LAST)
     return a
 
 # Create shapes on mouse dragging and resize and show the shapes on the canvas
@@ -102,12 +106,13 @@ def clearCanvas(e=""):
 
 root = Tk()
 root.title("Bad Handwriting Who?")
-root.minsize(600, 300) #Minimum Size of the window
+CANVAS_WIDTH = 800
+CANVAS_HEIGHT = 600
+root.minsize(CANVAS_WIDTH, CANVAS_HEIGHT) #Minimum Size of the window
 # All Widgets here such as canvas, buttons etc
 
 # Canvas
-CANVAS_WIDTH = 800
-CANVAS_HEIGHT = 600
+
 canvas = Canvas(root, width=CANVAS_WIDTH, height=CANVAS_HEIGHT, bg="white")
 canvas.pack()
 
@@ -120,7 +125,7 @@ canvas.bind("<Motion>", captureMotion) #Mouse Motion
 frame = Frame(root)
 frame.pack(side=TOP)
 radiovalue = StringVar()
-geometry_shapes = ["Line", "Rectangle", "Arc", "Oval", "Text", "G-code", "Paint", "Erase"]
+geometry_shapes = ["Line", "Rectangle", "Arc", "Oval", "Text", "G-code", "Paint", "Erase", "Arrow"]
 radiovalue.set("Line")  # Default Select
 
 # Manupulates Radios from the list
@@ -128,7 +133,7 @@ for shape in geometry_shapes:
     radio = Radiobutton(frame, text=shape, variable=radiovalue, font="comicsans     12 bold", value=shape, command=shapechanger).pack(side=LEFT, padx=6,pady=3)
 
 #Buttons
-Button(frame, text="Clear", font="comicsans 12 bold",
+Button(root, text="Clear Canvas", font="comicsans 12 bold",
        command=clearCanvas).pack(side=TOP, padx=6)
 
 #Text Input
