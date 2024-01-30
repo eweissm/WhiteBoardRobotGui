@@ -61,9 +61,11 @@ def createElms():
                                width=line_width,
                                smooth=TRUE, splinesteps=3)
     elif shape == "Text":
-        a = canvas.create_text(x, y, text=TextValueEntry.get())
+        a = canvas.create_text(x, y, text=TextValueEntry.get(), font=('comicsans',FontSizeEntry.get(), 'bold'))
     elif shape == "G-code":
         a = canvas.create_text(x, y, text="WIP")
+    elif shape == "Paint":
+        a = canvas.create_oval(x-1, y-1, x+1, y+1, fill="Black")
     return a
 
 # Create shapes on mouse dragging and resize and show the shapes on the canvas
@@ -76,7 +78,8 @@ def drawShapesOnDragging(e=""):
 
         #Generate Element
         element = createElms()
-        deleteUnwanted(element) # Delete unwanted shapes
+        if shape != "Paint":
+            deleteUnwanted(element) # Delete unwanted shapes
     except Exception as e:
         tmsg.showerror("Some Error Occurred!", e)
 
@@ -114,7 +117,7 @@ canvas.bind("<Motion>", captureMotion) #Mouse Motion
 frame = Frame(root)
 frame.pack(side=TOP)
 radiovalue = StringVar()
-geometry_shapes = ["Line", "Rectangle", "Arc", "Oval", "Text", "G-code"]
+geometry_shapes = ["Line", "Rectangle", "Arc", "Oval", "Text", "G-code", "Paint"]
 radiovalue.set("Line")  # Default Select
 
 # Manupulates Radios from the list
@@ -129,14 +132,17 @@ Button(frame, text="Clear", font="comicsans 12 bold",
 TextParametersFrame = Frame(master=root, width=100)
 TextLableLable = Label(master=TextParametersFrame, text=' Your Text: ',
                                  font=("Courier", 12, 'bold')).pack(side='left', ipadx=0, padx=0, pady=0)
-TextValueEntry = Entry(TextParametersFrame).pack(side=LEFT)
+
+TextValueEntry = Entry(TextParametersFrame)
+TextValueEntry.pack(side=LEFT)
 
 FontSizeLabel = Label(master=TextParametersFrame, text=' Text Size: ',
                                  font=("Courier", 12, 'bold')).pack(side='left', ipadx=0, padx=0, pady=0)
-FontSizeEntry = Entry(TextParametersFrame).pack(side=LEFT)
+FontSizeEntry = Entry(TextParametersFrame)
+FontSizeEntry.pack(side=LEFT)
 
-TextValueEntry.insert("Type Text Here")
-FontSizeLabel.insert(12)
+TextValueEntry.insert(0,"Type Text Here")
+FontSizeEntry.insert(0,12)
 
 TextParametersFrame.pack(fill=BOTH, side=TOP, expand=True)
 
@@ -144,7 +150,8 @@ TextParametersFrame.pack(fill=BOTH, side=TOP, expand=True)
 GcodeInputFrame = Frame(master=root, width=100)
 GcodeLableLable = Label(master=GcodeInputFrame, text=' Gcode Address: ',
                                  font=("Courier", 12, 'bold')).pack(side='left', ipadx=0, padx=0, pady=0)
-GcodeValueEntry = Entry(GcodeInputFrame).pack(side=LEFT)
+GcodeValueEntry = Entry(GcodeInputFrame)
+GcodeValueEntry.pack(side=LEFT)
 GcodeInputFrame.pack(fill=BOTH, side=TOP, expand=True)
 
 #Robot controls Buttons
