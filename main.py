@@ -1,6 +1,7 @@
 from tkinter import *
 import tkinter.messagebox as tmsg
 from PIL import Image,ImageTk
+from Bmp_to_Gcode import *
 
 # Starting point of mouse dragging or shapes
 prev_x = 0 
