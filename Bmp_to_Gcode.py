@@ -12,6 +12,7 @@ import potrace
 def Img_to_Gcode(OriginalImageAddress):
 
     img = Image.open(OriginalImageAddress)
+
     ary = np.array(img)
 
     # Split the three channels
@@ -27,4 +28,8 @@ def Img_to_Gcode(OriginalImageAddress):
     bitmap = np.dot((bitmap > 128).astype(float), 255)
     im = Image.fromarray(bitmap.astype(np.uint8))
 
-    trace_result = potrace.trace(im)
+    bmp = potrace.Bitmap(im)  # convert image array  into Pypotrace bitmap object
+
+    path = bmp.trace()
+
+Img_to_Gcode("Example Image.bmp")
