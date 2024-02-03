@@ -111,6 +111,15 @@ def clearCanvas(e=""):
     image_elements = []
     new = []
 
+def printToBoard():
+    global created_element_info
+    filename = asksaveasfilename(initialfile="drawing", defaultextension=".pkl",
+                                 filetypes=[("Pickle Files", "*.pkl")])  # Save as
+    if filename != None:
+        with open(filename, "wb") as f:
+            pickle.dump(created_element_info, f)
+    Img_to_Gcode
+
 
 root = Tk()
 root.title("Bad Handwriting Who?")
@@ -187,7 +196,7 @@ ZeroButton = Button(RobotControlFrame,
 
 PrintToBoardButton = Button(RobotControlFrame,
                                    text="Print Canvas To Board",
-                                   command=clearCanvas,
+                                   command=printToBoard,
                                    height=4,
                                    fg="black",
                                    width=20,
