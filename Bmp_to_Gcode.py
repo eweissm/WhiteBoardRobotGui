@@ -10,19 +10,20 @@ import numpy as np
 import potrace
 import matplotlib.pyplot as plt
 import math
+import PIL.ImageOps
 
 def Img_to_Gcode(OriginalImageAddress):
 
     bitmap = Image.open(OriginalImageAddress)
-
-    ary = np.array(bitmap)
-
-    bitmap = np.array(bitmap).reshape([ary.shape[0], ary.shape[1]])
+    bitmap = PIL.ImageOps.invert(bitmap)
+    bitmap = np.array(bitmap).reshape([bitmap.height, bitmap.width])
+    bitmap= np.flip(bitmap)
+    bitmap = np.flip(bitmap,1)
     bitmap = np.dot((bitmap > 128).astype(float), 1)
     im = Image.fromarray(bitmap.astype(np.uint8))
     bmp = potrace.Bitmap(bitmap)  # convert image array  into Pypotrace bitmap object
 
-    path = bmp.trace(alphamax = 1)
+    path = bmp.trace(turnpolicy= potrace.TURNPOLICY_WHITE ,alphamax = 1)
 
     xvals = []
     yvals = []
@@ -45,8 +46,6 @@ def Img_to_Gcode(OriginalImageAddress):
                                                                 segment.end_point)
                     xvals = xvals + temp_x_list
                     yvals = yvals + temp_y_list
-
-    print(xvals)
 
     # plot
     fig, ax = plt.subplots()
@@ -73,7 +72,7 @@ def bezier_to_points(p1: point, p2: point, p3: point, p4: point):
                 + 3 * p3[1] * (1 - t) * math.pow(t, 2)
                 + p4[1] * math.pow(t, 3)
         ))
-    print(x_list)
+    #print(x_list)
 
     return x_list, y_list
 
