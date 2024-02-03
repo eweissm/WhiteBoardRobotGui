@@ -33,6 +33,9 @@ def Img_to_Gcode(OriginalImageAddress):
     xvals = []
     yvals = []
 
+    startingPoints_x = []
+    startingPoints_y = []
+
     #cyle through curves and segements in the curves
     for curve in path:
         firstSegment = True
@@ -52,6 +55,12 @@ def Img_to_Gcode(OriginalImageAddress):
                                                                 segment.end_point)
                     xvals = xvals + temp_x_list
                     yvals = yvals + temp_y_list
+
+                    tempx, tempy =curve.start_point
+
+                    startingPoints_x.append(tempx)
+                    startingPoints_y.append(tempy)
+
             firstSegment = False
 
 
@@ -59,6 +68,7 @@ def Img_to_Gcode(OriginalImageAddress):
 
     fig, ax = plt.subplots()
     ax.plot(xvals, yvals, linewidth=.7)
+    ax.plot(startingPoints_x,startingPoints_y,'r.')
     ax.set(xlim=(-25, 625),
            ylim=(25, 360))
     plt.show()
