@@ -28,7 +28,7 @@ def Img_to_Gcode(OriginalImageAddress):
 
     bmp = potrace.Bitmap(bitmap)  # convert image array  into Pypotrace bitmap object
 
-    path = bmp.trace(turdsize = 20 ,turnpolicy= potrace.TURNPOLICY_MINORITY ,alphamax = 1, opticurve =0) # perform trace
+    path = bmp.trace(turdsize = 50 ,turnpolicy= potrace.TURNPOLICY_MINORITY ,alphamax = 1, opticurve =0) # perform trace
 
     #lists for discretized points from the trace
     xvals = []
