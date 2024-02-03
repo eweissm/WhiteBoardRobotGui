@@ -56,17 +56,19 @@ def Img_to_Gcode(OriginalImageAddress):
                     xvals = xvals + temp_x_list
                     yvals = yvals + temp_y_list
 
-
-
             firstSegment = False
         Curves_X_Cords.append(xvals)
         Curves_Y_Cords.append(yvals)
+        xvals=[]
+        yvals = []
 
     print(len(Curves_X_Cords))
     # plot
 
     fig, ax = plt.subplots()
-    ax.plot(Curves_X_Cords[0], Curves_Y_Cords[0], linewidth=.7)
+
+    for i in range(len(Curves_X_Cords)):
+        ax.plot(Curves_X_Cords[i], Curves_Y_Cords[i], linewidth=.7)
     ax.set(xlim=(-25, 625),
            ylim=(25, 360))
     plt.show()
