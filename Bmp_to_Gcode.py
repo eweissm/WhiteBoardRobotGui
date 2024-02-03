@@ -29,21 +29,22 @@ def Img_to_Gcode(OriginalImageAddress):
 
     #print(path)
     for curve in path:
-        #print("start_point =", curve.start_point)
         for segment in curve:
-           # print(segment)
-            end_point_x, end_point_y = segment.end_point
             if segment.is_corner:
                 c_x, c_y = segment.c
                 xvals.append(float(c_x))
                 yvals.append(float(c_y))
             else:
-                c1_x, c1_y = segment.c1
-                c2_x, c2_y = segment.c2
 
-                temp_x_list, temp_y_list = bezier_to_points(curve.start_point, segment.c1, segment.c2, segment.end_point)
-                xvals= xvals +temp_x_list
-                yvals = yvals + temp_y_list
+                try:
+                    temp_x_list, temp_y_list = bezier_to_points([xvals[-1],yvals[-1]], segment.c1, segment.c2, segment.end_point)
+                    xvals= xvals +temp_x_list
+                    yvals = yvals + temp_y_list
+                except:
+                    temp_x_list, temp_y_list = bezier_to_points(curve.start_point, segment.c1, segment.c2,
+                                                                segment.end_point)
+                    xvals = xvals + temp_x_list
+                    yvals = yvals + temp_y_list
 
     print(xvals)
 
