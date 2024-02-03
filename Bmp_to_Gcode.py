@@ -54,11 +54,17 @@ def Img_to_Gcode(OriginalImageAddress):
                     yvals = yvals + temp_y_list
             firstSegment = False
 
+
     # plot
+
     fig, ax = plt.subplots()
-    ax.plot(xvals, yvals)
+    ax.plot(xvals, yvals, linewidth=.7)
+    ax.set(xlim=(-25, 625),
+           ylim=(25, 360))
     plt.show()
 
+
+    #print(list(zip(xvals,yvals)))
 # Type alias for a point
 point = tuple[float, float]
 
@@ -86,7 +92,7 @@ def bezier_to_points(p1: point, p2: point, p3: point, p4: point):
     x_list.pop(0)
     y_list.pop(0)
 
-    print(x_list)
+    #print(x_list)
 
     return x_list, y_list
 
