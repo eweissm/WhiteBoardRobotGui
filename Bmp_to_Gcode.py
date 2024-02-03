@@ -14,7 +14,7 @@ import math
 import PIL.ImageOps
 
 def Img_to_Gcode(OriginalImageAddress):
-    threshold = 150
+    threshold = 100
 
     bitmap = Image.open(OriginalImageAddress) # get the bmp as pil image
     bitmap = PIL.ImageOps.invert(bitmap)    #flip colors (makes sure edges arent traced)
@@ -33,6 +33,7 @@ def Img_to_Gcode(OriginalImageAddress):
     xvals = []
     yvals = []
 
+    print(path.curves)
     #cyle through curves and segements in the curves
     for curve in path:
         firstSegment = True
@@ -44,8 +45,8 @@ def Img_to_Gcode(OriginalImageAddress):
                 yvals.append(float(c_y))
             else:
                 if not firstSegment:
-                    temp_x_list, temp_y_list = bezier_to_points([xvals[-1],yvals[-1]], segment.c1, segment.c2, segment.end_point)
-                    xvals= xvals +temp_x_list
+                    temp_x_list, temp_y_list = bezier_to_points([xvals[-1], yvals[-1]], segment.c1, segment.c2, segment.end_point)
+                    xvals= xvals + temp_x_list
                     yvals = yvals + temp_y_list
                 else:
                     temp_x_list, temp_y_list = bezier_to_points(curve.start_point, segment.c1, segment.c2,
@@ -61,6 +62,8 @@ def Img_to_Gcode(OriginalImageAddress):
 
 # Type alias for a point
 point = tuple[float, float]
+
+# function converts bezierr segment into set of point
 def bezier_to_points(p1: point, p2: point, p3: point, p4: point):
     numSegments = 5
 
@@ -79,7 +82,8 @@ def bezier_to_points(p1: point, p2: point, p3: point, p4: point):
                 + 3 * p3[1] * (1 - t) * math.pow(t, 2)
                 + p4[1] * math.pow(t, 3)
         ))
-    #print(x_list)
+    x_list.pop(0)
+    y_list.pop(0)
 
     return x_list, y_list
 
