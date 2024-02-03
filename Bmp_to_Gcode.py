@@ -5,6 +5,7 @@
 # 2)use thresholding to outine features
 # 3) Trace image using Potrace --> gives list of paths
 
+#import libs
 from PIL import Image
 import numpy as np
 import potrace
@@ -13,17 +14,20 @@ import math
 import PIL.ImageOps
 
 def Img_to_Gcode(OriginalImageAddress):
+    threshold = 150
 
-    bitmap = Image.open(OriginalImageAddress)
-    bitmap = PIL.ImageOps.invert(bitmap)
+    bitmap = Image.open(OriginalImageAddress) # get the bmp as pil image
+    bitmap = PIL.ImageOps.invert(bitmap)    #flip colors (makes sure edges arent traced)
+
+    #this section converts bitmap to values from 0 to 1:
     bitmap = np.array(bitmap).reshape([bitmap.height, bitmap.width])
     bitmap= np.flip(bitmap)
     bitmap = np.flip(bitmap,1)
-    bitmap = np.dot((bitmap > 128).astype(float), 1)
-    im = Image.fromarray(bitmap.astype(np.uint8))
+    bitmap = np.dot((bitmap > threshold).astype(float), 1)
+
     bmp = potrace.Bitmap(bitmap)  # convert image array  into Pypotrace bitmap object
 
-    path = bmp.trace(turnpolicy= potrace.TURNPOLICY_WHITE ,alphamax = 1)
+    path = bmp.trace(turdsize = 50 ,turnpolicy= potrace.TURNPOLICY_MINORITY ,alphamax = 1, opticurve =0) # perform trace
 
     xvals = []
     yvals = []
@@ -55,7 +59,7 @@ def Img_to_Gcode(OriginalImageAddress):
 # Type alias for a point
 point = tuple[float, float]
 def bezier_to_points(p1: point, p2: point, p3: point, p4: point):
-    numSegments = 10
+    numSegments = 5
 
     x_list =[]
     y_list = []
