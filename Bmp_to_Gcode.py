@@ -33,7 +33,6 @@ def Img_to_Gcode(OriginalImageAddress):
     xvals = []
     yvals = []
 
-    print(path.curves)
     #cyle through curves and segements in the curves
     for curve in path:
         firstSegment = True
@@ -65,8 +64,10 @@ point = tuple[float, float]
 
 # function converts bezierr segment into set of point
 def bezier_to_points(p1: point, p2: point, p3: point, p4: point):
-    numSegments = 5
-
+    # MaxSectionLength = 10
+    # approxBezierLength = math.sqrt( (p1[0] - p4[0])**2 + (p1[0] - p4[1])**2 )
+    # numSegments = math.ceil(approxBezierLength/MaxSectionLength)
+    numSegments=5
     x_list =[]
     y_list = []
     for t in np.linspace(0, 1, num=numSegments):
@@ -84,6 +85,8 @@ def bezier_to_points(p1: point, p2: point, p3: point, p4: point):
         ))
     x_list.pop(0)
     y_list.pop(0)
+
+    print(x_list)
 
     return x_list, y_list
 
