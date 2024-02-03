@@ -6,7 +6,7 @@
 # 3) Trace image using Potrace --> gives list of paths
 
 #import libs
-from PIL import Image
+from PIL import Image, ImageFilter
 import numpy as np
 import potrace
 import matplotlib.pyplot as plt
@@ -14,10 +14,11 @@ import math
 import PIL.ImageOps
 
 def Img_to_Gcode(OriginalImageAddress):
-    threshold = 100
+    threshold = 200
 
     bitmap = Image.open(OriginalImageAddress) # get the bmp as pil image
     bitmap = PIL.ImageOps.invert(bitmap)    #flip colors (makes sure edges arent traced)
+    #bitmap = bitmap.filter(ImageFilter.BoxBlur(2))
 
     #this section converts bitmap to values from 0 to 1:
     bitmap = np.array(bitmap).reshape([bitmap.height, bitmap.width])
@@ -27,7 +28,7 @@ def Img_to_Gcode(OriginalImageAddress):
 
     bmp = potrace.Bitmap(bitmap)  # convert image array  into Pypotrace bitmap object
 
-    path = bmp.trace(turdsize = 50 ,turnpolicy= potrace.TURNPOLICY_MINORITY ,alphamax = 1, opticurve =0) # perform trace
+    path = bmp.trace(turdsize = 20 ,turnpolicy= potrace.TURNPOLICY_MINORITY ,alphamax = 1, opticurve =0) # perform trace
 
     #lists for discretized points from the trace
     xvals = []
