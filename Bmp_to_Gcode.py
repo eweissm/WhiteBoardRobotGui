@@ -4,6 +4,7 @@
 # 1) convert image to black and white
 # 2)use thresholding to outine features
 # 3) Trace image using Potrace --> gives list of paths
+# 4) turn trace into series of x, y points on distinct curves
 
 #import libs
 from PIL import Image, ImageFilter
