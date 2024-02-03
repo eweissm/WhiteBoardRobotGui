@@ -29,27 +29,30 @@ def Img_to_Gcode(OriginalImageAddress):
 
     path = bmp.trace(turdsize = 50 ,turnpolicy= potrace.TURNPOLICY_MINORITY ,alphamax = 1, opticurve =0) # perform trace
 
+    #lists for discretized points from the trace
     xvals = []
     yvals = []
 
-    #print(path)
+    #cyle through curves and segements in the curves
     for curve in path:
+        firstSegment = True
+
         for segment in curve:
             if segment.is_corner:
                 c_x, c_y = segment.c
                 xvals.append(float(c_x))
                 yvals.append(float(c_y))
             else:
-
-                try:
+                if not firstSegment:
                     temp_x_list, temp_y_list = bezier_to_points([xvals[-1],yvals[-1]], segment.c1, segment.c2, segment.end_point)
                     xvals= xvals +temp_x_list
                     yvals = yvals + temp_y_list
-                except:
+                else:
                     temp_x_list, temp_y_list = bezier_to_points(curve.start_point, segment.c1, segment.c2,
                                                                 segment.end_point)
                     xvals = xvals + temp_x_list
                     yvals = yvals + temp_y_list
+            firstSegment = False
 
     # plot
     fig, ax = plt.subplots()
