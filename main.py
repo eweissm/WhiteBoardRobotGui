@@ -1,7 +1,8 @@
 from tkinter import *
 import tkinter.messagebox as tmsg
-from PIL import Image,ImageTk
+from PIL import Image,ImageTk, ImageGrab
 from Bmp_to_Gcode import *
+
 
 # Starting point of mouse dragging or shapes
 prev_x = 0 
@@ -112,13 +113,18 @@ def clearCanvas(e=""):
     new = []
 
 def printToBoard():
-    global created_element_info
-    filename = asksaveasfilename(initialfile="drawing", defaultextension=".pkl",
-                                 filetypes=[("Pickle Files", "*.pkl")])  # Save as
-    if filename != None:
-        with open(filename, "wb") as f:
-            pickle.dump(created_element_info, f)
-    Img_to_Gcode
+    # ps = canvas.postscript(file = "test.ps", colormode = 'mono')
+    # img = Image.open(io.BytesIO(ps.encode('utf-8')))
+    # Img_to_Gcode(img)
+    widget=canvas
+    ImageGrab.grab(bbox=(
+        widget.winfo_rootx(),
+        widget.winfo_rooty(),
+        widget.winfo_rootx() + widget.winfo_width(),
+        widget.winfo_rooty() + widget.winfo_height()
+    )).save(file_name)
+
+
 
 
 root = Tk()

@@ -14,10 +14,10 @@ import matplotlib.pyplot as plt
 import math
 import PIL.ImageOps
 
-def Img_to_Gcode(OriginalImageAddress):
+def Img_to_Gcode(bitmap):
     threshold = 200
 
-    bitmap = Image.open(OriginalImageAddress) # get the bmp as pil image
+
     bitmap = PIL.ImageOps.invert(bitmap)    #flip colors (makes sure edges arent traced)
     #bitmap = bitmap.filter(ImageFilter.BoxBlur(2))
 
@@ -64,7 +64,7 @@ def Img_to_Gcode(OriginalImageAddress):
         xvals=[]
         yvals = []
 
-    print(len(Curves_X_Cords))
+    #print(len(Curves_X_Cords))
     # plot
 
     fig, ax = plt.subplots()
@@ -108,4 +108,5 @@ def bezier_to_points(p1: point, p2: point, p3: point, p4: point):
 
     return x_list, y_list
 
-Img_to_Gcode("Example Image.bmp")
+#bitmap = Image.open("Example Image.bmp") # get the bmp as pil image
+#Img_to_Gcode(bitmap)
