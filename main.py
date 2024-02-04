@@ -113,15 +113,14 @@ def clearCanvas(e=""):
     new = []
 
 def printToBoard():
-    widget=canvas
+    #takes a screen cap of the canvas
     img = ImageGrab.grab(bbox=(
-        widget.winfo_rootx(),
-        widget.winfo_rooty(),
-        widget.winfo_rootx() + widget.winfo_width(),
-        widget.winfo_rooty() + widget.winfo_height()
-    ))
-    img = ImageOps.grayscale(img)
-    Img_to_Gcode(img)
+        canvas.winfo_rootx(),
+        canvas.winfo_rooty(),
+        canvas.winfo_rootx() + canvas.winfo_width(),
+        canvas.winfo_rooty() + canvas.winfo_height()))
+    img = ImageOps.grayscale(img) #turns pic to bit map
+    Img_to_Gcode(img) # convert to GCode
 
 
 root = Tk()
