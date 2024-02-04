@@ -15,11 +15,9 @@ import math
 import PIL.ImageOps
 
 def Img_to_Gcode(bitmap):
-    threshold = 200
-
+    threshold = 100
 
     bitmap = PIL.ImageOps.invert(bitmap)    #flip colors (makes sure edges arent traced)
-    #bitmap = bitmap.filter(ImageFilter.BoxBlur(2))
 
     #this section converts bitmap to values from 0 to 1:
     bitmap = np.array(bitmap).reshape([bitmap.height, bitmap.width])
@@ -29,7 +27,7 @@ def Img_to_Gcode(bitmap):
 
     bmp = potrace.Bitmap(bitmap)  # convert image array  into Pypotrace bitmap object
 
-    path = bmp.trace(turdsize = 50 ,turnpolicy= potrace.TURNPOLICY_MINORITY ,alphamax = 1, opticurve =0) # perform trace
+    path = bmp.trace(turdsize = 5 ,turnpolicy= potrace.TURNPOLICY_MINORITY ,alphamax = 1, opticurve =0) # perform trace
 
     #lists for discretized points from the trace
     xvals = []
@@ -71,8 +69,8 @@ def Img_to_Gcode(bitmap):
 
     for i in range(len(Curves_X_Cords)):
         ax.plot(Curves_X_Cords[i], Curves_Y_Cords[i], linewidth=.7)
-    ax.set(xlim=(-25, 625),
-           ylim=(25, 360))
+    # ax.set(xlim=(-25, 625),
+    #        ylim=(25, 360))
     plt.show()
 
 

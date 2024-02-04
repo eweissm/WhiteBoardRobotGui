@@ -1,6 +1,6 @@
 from tkinter import *
 import tkinter.messagebox as tmsg
-from PIL import Image,ImageTk, ImageGrab
+from PIL import Image,ImageTk, ImageGrab, ImageOps
 from Bmp_to_Gcode import *
 
 
@@ -113,21 +113,15 @@ def clearCanvas(e=""):
     new = []
 
 def printToBoard():
-    # ps = canvas.postscript(file = "test.ps", colormode = 'mono')
-    # img = Image.open(io.BytesIO(ps.encode('utf-8')))
-    # Img_to_Gcode(img)
     widget=canvas
     img = ImageGrab.grab(bbox=(
         widget.winfo_rootx(),
         widget.winfo_rooty(),
-        widget.winfo_rootx() + widget.winfo_width()-4,
-        widget.winfo_rooty() + widget.winfo_height()-4
-    )).save("CanvasImage.bmp")
-
-    bitmap = Image.open("CanvasImage.bmp") # get the bmp as pil image
-    Img_to_Gcode(bitmap)
-
-
+        widget.winfo_rootx() + widget.winfo_width(),
+        widget.winfo_rooty() + widget.winfo_height()
+    ))
+    img = ImageOps.grayscale(img)
+    Img_to_Gcode(img)
 
 
 root = Tk()
