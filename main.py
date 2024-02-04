@@ -122,7 +122,6 @@ def printToBoard():
     img = ImageOps.grayscale(img) #turns pic to bit map
     Img_to_Gcode(img) # convert to GCode
 
-
 root = Tk()
 root.title("Bad Handwriting Who?")
 
