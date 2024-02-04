@@ -117,12 +117,15 @@ def printToBoard():
     # img = Image.open(io.BytesIO(ps.encode('utf-8')))
     # Img_to_Gcode(img)
     widget=canvas
-    ImageGrab.grab(bbox=(
+    img = ImageGrab.grab(bbox=(
         widget.winfo_rootx(),
         widget.winfo_rooty(),
-        widget.winfo_rootx() + widget.winfo_width(),
-        widget.winfo_rooty() + widget.winfo_height()
-    )).save(file_name)
+        widget.winfo_rootx() + widget.winfo_width()-4,
+        widget.winfo_rooty() + widget.winfo_height()-4
+    )).save("CanvasImage.bmp")
+
+    bitmap = Image.open("CanvasImage.bmp") # get the bmp as pil image
+    Img_to_Gcode(bitmap)
 
 
 
