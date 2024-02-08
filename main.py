@@ -72,10 +72,59 @@ def set_coordinates_state(x_coord, y_coord):
             else:
                 Xsteps = np.interp(Ysteps, [thisYCoord, prev_X_and_Y[1]], [thisXCoord, prev_X_and_Y[0]])
 
-        prev_X_and_Y = [thisXCoord, thisYCoord]  # update prev_X_and_Y
 
         #Xsteps and Ysteps are np arrays of steps that will be taken
 
+        #Send moves to stm32
+    for i in range(len(Xsteps)):
+
+        start = time.time()
+
+        # send serial data to stm32 in format --> <xcoord>A<ycoord>B
+        ser.write(bytes(str(Xsteps[i]), 'UTF-8'))
+        ser.write(bytes('A', 'UTF-8'))
+        ser.write(bytes(str(Ysteps[i]), 'UTF-8'))
+        ser.write(bytes('B', 'UTF-8'))
+
+        #same calculation performed on stm32
+        ExpectedTime = np.sqrt((Xsteps[i] - prev_X_and_Y[0]) ** 2 + (Ysteps[i] - prev_X_and_Y[1]) ** 2) / speed
+        print("ExpectedTime: " + ExpectedTime)
+
+        try:
+            # convert expected time to float (minimum time is 0.005s)
+            ExpectedTime = max(ExpectedTime, 0.1)
+        except ValueError:
+            ExpectedTime = 0.1
+
+        ser.reset_input_buffer()  # clear input buffer
+
+        # if we get a 'y' from stm32, we move on, otherwise we will wait 0.5 sec. We will repeat this 5 times.
+        # After which, if we still do not have confirmation, we will print to the monitor that there was a problem
+        # and move on
+
+        DidMoveWork = False
+
+        MoveSuccessMessage = ''
+
+        MoveStartTime = time.time()
+
+        while time.time()-MoveStartTime < ExpectedTime*4 and not DidMoveWork:
+            if ser.inWaiting():
+                MoveSuccessMessage = ser.read(1)  # read one bit from buffer
+
+            if MoveSuccessMessage == b'y':
+                DidMoveWork = True
+                print("Move was successful")
+
+        if not DidMoveWork:
+            print("Move was not successful")
+
+        ser.reset_input_buffer()  # clear input buffer
+        end = time.time()
+
+        #print("Difference between expected time and actual time: " + str(end - start - ExpectedTime))
+
+        prev_X_and_Y = [Xsteps[i], Ysteps[i]]  # update prev_X_and_Y
 
 # All the functions and logics go here
 #Capture Motions on every mouse position change
