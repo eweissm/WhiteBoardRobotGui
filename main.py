@@ -2,7 +2,8 @@ from tkinter import *
 import tkinter.messagebox as tmsg
 from PIL import Image,ImageTk, ImageGrab, ImageOps
 from Bmp_to_Gcode import *
-
+import serial
+import time
 
 # Starting point of mouse dragging or shapes
 prev_x = 0 
@@ -19,6 +20,62 @@ color = "Black" # Color of the shape
 line_width = 1 # Width of the line shape
 CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 600
+
+# set up serial comms---------------------------------------------------------------------------------------------------
+ser = serial.Serial('com4', 9600, timeout=10) # create Serial Object, baud = 9600, read times out after 10s
+time.sleep(3)  # delay 3 seconds to allow serial com to get established
+
+
+prev_X_and_Y = [0,0]
+# This command sends serial message to stm32 to move to point (x, y)
+def set_coordinates_state(x_coord, y_coord):
+    global prev_X_and_Y  # Previous X and Y coordinates
+
+    #velocity must be same here as in stm32 code
+    speed = 50
+
+    try:
+        NumEntries = len(x_coord)
+        # handle list / array case
+    except TypeError:  # oops, was a float
+        NumEntries = 1
+
+    ser.reset_input_buffer()  # clear input buffer
+
+    for i in range(NumEntries):
+        if NumEntries > 1:
+            thisXCoord = x_coord[i]
+            thisYCoord = y_coord[i]
+        else:
+            thisXCoord = x_coord
+            thisYCoord = y_coord
+
+        # In order to allow the arm to move in approximately straight lines between 2 points, we will discretize the
+        # path taken between two point such that no 2 points along the path are greater than 1 cm
+
+        # Length of straight line from current coords to target coords
+        PathLength = np.sqrt((thisXCoord - prev_X_and_Y[0]) ** 2 + (thisYCoord - prev_X_and_Y[1]) ** 2)
+
+        numberOfPathSteps = math.ceil(PathLength / 1)
+
+        # Find X and Y coordinates along the path --discretize straight line path
+        if thisXCoord != prev_X_and_Y[0]:
+            Xsteps = np.linspace(prev_X_and_Y[0], thisXCoord, numberOfPathSteps)
+            if prev_X_and_Y[0] < thisXCoord:
+                Ysteps = np.interp(Xsteps, [prev_X_and_Y[0], thisXCoord], [prev_X_and_Y[1], thisYCoord])
+            else:
+                Ysteps = np.interp(Xsteps, [thisXCoord, prev_X_and_Y[0]], [thisYCoord, prev_X_and_Y[1]])
+        else:
+            Ysteps = np.linspace(prev_X_and_Y[1], thisYCoord, numberOfPathSteps)
+            if prev_X_and_Y[1] < thisYCoord:
+                Xsteps = np.interp(Ysteps, [prev_X_and_Y[1], thisYCoord], [prev_X_and_Y[0], thisXCoord])
+            else:
+                Xsteps = np.interp(Ysteps, [thisYCoord, prev_X_and_Y[1]], [thisXCoord, prev_X_and_Y[0]])
+
+        prev_X_and_Y = [thisXCoord, thisYCoord]  # update prev_X_and_Y
+
+        #Xsteps and Ysteps are np arrays of steps that will be taken
+
 
 # All the functions and logics go here
 #Capture Motions on every mouse position change
