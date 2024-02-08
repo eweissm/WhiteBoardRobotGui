@@ -211,6 +211,7 @@ XPosLable = Label(master=XPosFrame, text=' X-Position: ',
                                  font=("Courier", 12, 'bold')).pack(side=LEFT, ipadx=0, padx=0, pady=0)
 XPosEntry = Entry(XPosFrame)
 XPosEntry.pack(side=LEFT)
+XPosEntry.insert(0,100)
 XPosFrame.pack(side=TOP)
 
 YPosFrame = Frame(master=RobotPositionFrame, width=100)
@@ -218,6 +219,7 @@ YPosLabel = Label(master=YPosFrame, text=' Y-Position: ',
                                  font=("Courier", 12, 'bold')).pack(side=LEFT, ipadx=0, padx=0, pady=0)
 YPosEntry = Entry(YPosFrame)
 YPosEntry.pack(side=LEFT)
+YPosEntry.insert(0,130)
 YPosFrame.pack(side=TOP)
 
 MoveRobotButton = Button(RobotControlFrame,
