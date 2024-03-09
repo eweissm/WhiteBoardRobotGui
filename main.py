@@ -22,8 +22,10 @@ CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 600
 
 # set up serial comms---------------------------------------------------------------------------------------------------
-#ser = serial.Serial('com4', 9600, timeout=10) # create Serial Object, baud = 9600, read times out after 10s
+print("Serial coms connecting...")
+ser = serial.Serial('com4', 9600, timeout=10) # create Serial Object, baud = 9600, read times out after 10s
 time.sleep(3)  # delay 3 seconds to allow serial com to get established
+print("Serial com connected")
 
 
 prev_X_and_Y = [0,0]
@@ -81,10 +83,9 @@ def set_coordinates_state(x_coord, y_coord):
         start = time.time()
 
         # send serial data to stm32 in format --> <xcoord>A<ycoord>B
-        ser.write(bytes(str(Xsteps[i]), 'UTF-8'))
-        ser.write(bytes('A', 'UTF-8'))
-        ser.write(bytes(str(Ysteps[i]), 'UTF-8'))
-        ser.write(bytes('B', 'UTF-8'))
+        Msg = "A,"+str(int(Xsteps[i])) +"," + str(int(Ysteps[i]))
+
+        ser.write(bytes(Msg, 'UTF-8'))
 
         #same calculation performed on stm32
         ExpectedTime = np.sqrt((Xsteps[i] - prev_X_and_Y[0]) ** 2 + (Ysteps[i] - prev_X_and_Y[1]) ** 2) / speed
@@ -125,6 +126,11 @@ def set_coordinates_state(x_coord, y_coord):
         #print("Difference between expected time and actual time: " + str(end - start - ExpectedTime))
 
         prev_X_and_Y = [Xsteps[i], Ysteps[i]]  # update prev_X_and_Y
+
+def GoToCoords(X, Y):
+    Msg = "M," + "{0:0=4d}".format(int(X)) + "," + "{0:0=4d}".format(int(Y))
+    print(Msg)
+    ser.write(bytes(Msg, 'UTF-8'))
 
 # All the functions and logics go here
 #Capture Motions on every mouse position change
@@ -315,22 +321,43 @@ RobotPositionFrame = Frame(master=RobotControlFrame, width=100)
 XPosFrame = Frame(master=RobotPositionFrame, width=100)
 XPosLable = Label(master=XPosFrame, text=' X-Position: ',
                                  font=("Courier", 12, 'bold')).pack(side=LEFT, ipadx=0, padx=0, pady=0)
-XPosEntry = Entry(XPosFrame)
+XPosEntry = Entry(XPosFrame, width= 5)
 XPosEntry.pack(side=LEFT)
 XPosEntry.insert(0,100)
 XPosFrame.pack(side=TOP)
 
+DeployMarkerButton = Button(XPosFrame,
+                                   text="Marker out",
+                                   command=printToBoard,
+                                   height=1,
+                                   fg="black",
+                                   width=10,
+                                   bd=5,
+                                   activebackground='green'
+                                   ).pack(side=LEFT, padx=10)
+
 YPosFrame = Frame(master=RobotPositionFrame, width=100)
 YPosLabel = Label(master=YPosFrame, text=' Y-Position: ',
                                  font=("Courier", 12, 'bold')).pack(side=LEFT, ipadx=0, padx=0, pady=0)
-YPosEntry = Entry(YPosFrame)
+YPosEntry = Entry(YPosFrame, width= 5)
 YPosEntry.pack(side=LEFT)
 YPosEntry.insert(0,130)
 YPosFrame.pack(side=TOP)
 
+StowMarkerButton = Button(YPosFrame,
+                                   text="Stow Marker",
+                                   command=printToBoard,
+                                   height=1,
+                                   fg="black",
+                                   width=10,
+                                   bd=5,
+                                   activebackground='green'
+                                   ).pack(side=LEFT, padx=10)
+
+
 MoveRobotButton = Button(RobotControlFrame,
                                    text="Go To Coords",
-                                   command=clearCanvas,
+                                   command=lambda: GoToCoords(XPosEntry.get(),YPosEntry.get()),
                                    height=4,
                                    fg="black",
                                    width=20,
