@@ -42,20 +42,26 @@ def FollowPath(PathXCoords, PathYCoords):
 
     print(PathXCoords, PathYCoords)
 
+    try:
+        NumEntries = len(PathXCoords)
+        # handle list / array case
+        Ysteps = PathYCoords
+        Xsteps = PathXCoords
+
+    except TypeError:  # oops, was a float
+        NumEntries = 1
+        Ysteps = []
+        Ysteps.append(PathYCoords)
+        Xsteps = []
+        Xsteps.append(PathXCoords)
+
     #velocity must be same here as in stm32 code
     speed = 50
 
-    Ysteps = []
-    Xsteps = []
-
-    Xsteps.append(PathXCoords)
-    Ysteps.append(PathYCoords)
-
         #Send moves to stm32
-    for i in range(len(Xsteps)):
+    for i in range(NumEntries):
         start = time.time()
         # send serial data to stm32
-        print(Xsteps[i], Ysteps[i])
         GoToCoords(Xsteps[i], Ysteps[i])
         #same calculation performed on stm32
         ExpectedTime = np.sqrt((Xsteps[i] - prev_X_and_Y[0]) ** 2 + (Ysteps[i] - prev_X_and_Y[1]) ** 2) / speed
