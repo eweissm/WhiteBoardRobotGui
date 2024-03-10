@@ -18,8 +18,12 @@ image_elements = [] #list contains all image objects used
 shape = "Line" # Shape to draw
 color = "Black" # Color of the shape
 line_width = 1 # Width of the line shape
+
+WhiteBoardDimensions = [300, 300]
+
 CANVAS_WIDTH = 800
-CANVAS_HEIGHT = 600
+#canvas will have same AR as the whiteboard
+CANVAS_HEIGHT = np.ceil(CANVAS_WIDTH * (WhiteBoardDimensions[1]/WhiteBoardDimensions[0]))
 
 #coordinates workhead returns to when waiting
 WaitingCoordinates = [50, 120]
@@ -30,8 +34,8 @@ ser = serial.Serial('com4', 9600, timeout=10) # create Serial Object, baud = 960
 time.sleep(3)  # delay 3 seconds to allow serial com to get established
 print("Serial com connected")
 
+prev_X_and_Y = [WaitingCoordinates[0], WaitingCoordinates[1]]
 
-prev_X_and_Y = [0, 0]
 # This command sends serial message to stm32 to move to point (x, y)
 def FollowPath(PathXCoords, PathYCoords):
     global prev_X_and_Y  # Previous X and Y coordinates
@@ -90,13 +94,15 @@ def FollowPath(PathXCoords, PathYCoords):
 
         #same calculation performed on stm32
         ExpectedTime = np.sqrt((Xsteps[i] - prev_X_and_Y[0]) ** 2 + (Ysteps[i] - prev_X_and_Y[1]) ** 2) / speed
-        print("ExpectedTime: " + ExpectedTime)
+
 
         try:
             # convert expected time to float (minimum time is 0.005s)
             ExpectedTime = max(ExpectedTime, 0.005)
         except ValueError:
             ExpectedTime = 0.005
+
+        print("ExpectedTime: " + ExpectedTime)
 
         ser.reset_input_buffer()  # clear input buffer
 
@@ -252,6 +258,8 @@ def printToBoard():
     # turns pic to bit map
     img = ImageOps.grayscale(img)
 
+    #make sure image has the same dims as the actual white board
+    img = img.resize(WhiteBoardDimensions)
     # convert to GCode
     Curves_X_Cords, Curves_Y_Cords = Img_to_Gcode(img)
 
@@ -271,6 +279,7 @@ def printToBoard():
         #stow marker
         StowMarker()
 
+    #return marker to waiting spot
     FollowPath(WaitingCoordinates[0], WaitingCoordinates[1])
 
 root = Tk()
