@@ -21,8 +21,8 @@ def Img_to_Gcode(bitmap):
 
     #this section converts bitmap to values from 0 to 1:
     bitmap = np.array(bitmap).reshape([bitmap.height, bitmap.width])
-    bitmap= np.flip(bitmap)
-    bitmap = np.flip(bitmap,1)
+    # bitmap = np.flip(bitmap)
+    # bitmap = np.flip(bitmap,1)
     bitmap = np.dot((bitmap > threshold).astype(float), 1)
 
     bmp = potrace.Bitmap(bitmap)  # convert image array  into Pypotrace bitmap object
@@ -70,7 +70,7 @@ def Img_to_Gcode(bitmap):
         ax.plot(Curves_X_Cords[i], Curves_Y_Cords[i], linewidth=.7)
 
     plt.show()
-    print((Curves_X_Cords))
+    #print((Curves_X_Cords))
     return Curves_X_Cords, Curves_Y_Cords
 
     #print(list(zip(xvals,yvals)))

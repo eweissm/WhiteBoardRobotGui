@@ -40,8 +40,7 @@ prev_X_and_Y = [WaitingCoordinates[0], WaitingCoordinates[1]]
 def FollowPath(PathXCoords, PathYCoords):
     global prev_X_and_Y  # Previous X and Y coordinates
 
-    print(PathXCoords, PathYCoords)
-
+    #print(PathXCoords, PathYCoords)
     try:
         NumEntries = len(PathXCoords)
         # handle list / array case
@@ -55,28 +54,10 @@ def FollowPath(PathXCoords, PathYCoords):
         Xsteps = []
         Xsteps.append(PathXCoords)
 
-    #velocity must be same here as in stm32 code
-    speed = 50
-
         #Send moves to stm32
     for i in range(NumEntries):
-        start = time.time()
-        # send serial data to stm32
+
         GoToCoords(Xsteps[i], Ysteps[i])
-        #same calculation performed on stm32
-        ExpectedTime = np.sqrt((Xsteps[i] - prev_X_and_Y[0]) ** 2 + (Ysteps[i] - prev_X_and_Y[1]) ** 2) / speed
-
-
-        try:
-            # convert expected time to float (minimum time is 0.005s)
-            ExpectedTime = max(ExpectedTime, 0.05)
-        except ValueError:
-            ExpectedTime = 0.05
-
-        print("ExpectedTime: " + str(ExpectedTime))
-
-        time.sleep(2*ExpectedTime)
-
         prev_X_and_Y = [Xsteps[i], Ysteps[i]]  # update prev_X_and_Y
 
 
@@ -181,23 +162,34 @@ def FollowPath(PathXCoords, PathYCoords):
 #         prev_X_and_Y = [Xsteps[i], Ysteps[i]]  # update prev_X_and_Y
 def GoToCoords(X, Y):
     Msg = "M," + "{0:0=4d}".format(int(X)) + "," + "{0:0=4d}".format(int(Y))
-   # print(Msg)
+    print(Msg)
     ser.write(bytes(Msg, 'UTF-8'))
 
     while (True):
         if ser.in_waiting:
-            print(ser.read())
+            #print(ser.read())
             break
+    ser.reset_input_buffer()  # clear input buffer
 
 def DeployMarker():
     Msg = "E,0000,0000"
+    print(Msg)
     ser.write(bytes(Msg, 'UTF-8'))
-    time.sleep(0.25)
+    while (True):
+        if ser.in_waiting:
+            #print(ser.read())
+            break
+    ser.reset_input_buffer()  # clear input buffer
 
 def StowMarker():
     Msg = "D,0000,0000"
+    print(Msg)
     ser.write(bytes(Msg, 'UTF-8'))
-    time.sleep(0.25)
+    while (True):
+        if ser.in_waiting:
+            #print(ser.read())
+            break
+    ser.reset_input_buffer()  # clear input buffer
 
 
 # All the functions and logics go here
@@ -314,6 +306,7 @@ def printToBoard():
     StowMarker() #make sure marker is stowed
 
     for i in range(len(Curves_X_Cords)):
+        print("curve: "+str(i))
         #move to first point along path
         FollowPath(Curves_X_Cords[i][0], Curves_Y_Cords[i][0])
 
@@ -332,7 +325,7 @@ def printToBoard():
 root = Tk()
 root.title("Bad Handwriting Who?")
 
-root.minsize(CANVAS_WIDTH, CANVAS_HEIGHT) #Minimum Size of the window
+root.minsize(CANVAS_WIDTH, CANVAS_HEIGHT)   #Minimum Size of the window
 # All Widgets here such as canvas, buttons etc
 
 # Canvas
