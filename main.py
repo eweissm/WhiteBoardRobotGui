@@ -21,6 +21,9 @@ line_width = 1 # Width of the line shape
 CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 600
 
+#coordinates workhead returns to when waiting
+WaitingCoordinates = [50, 120]
+
 # set up serial comms---------------------------------------------------------------------------------------------------
 print("Serial coms connecting...")
 ser = serial.Serial('com4', 9600, timeout=10) # create Serial Object, baud = 9600, read times out after 10s
@@ -28,16 +31,16 @@ time.sleep(3)  # delay 3 seconds to allow serial com to get established
 print("Serial com connected")
 
 
-prev_X_and_Y = [0,0]
+prev_X_and_Y = [0, 0]
 # This command sends serial message to stm32 to move to point (x, y)
-def set_coordinates_state(x_coord, y_coord):
+def FollowPath(PathXCoords, PathYCoords):
     global prev_X_and_Y  # Previous X and Y coordinates
 
     #velocity must be same here as in stm32 code
     speed = 50
 
     try:
-        NumEntries = len(x_coord)
+        NumEntries = len(PathXCoords)
         # handle list / array case
     except TypeError:  # oops, was a float
         NumEntries = 1
@@ -46,11 +49,11 @@ def set_coordinates_state(x_coord, y_coord):
 
     for i in range(NumEntries):
         if NumEntries > 1:
-            thisXCoord = x_coord[i]
-            thisYCoord = y_coord[i]
+            thisXCoord = PathXCoords[i]
+            thisYCoord = PathYCoords[i]
         else:
-            thisXCoord = x_coord
-            thisYCoord = y_coord
+            thisXCoord = PathXCoords
+            thisYCoord = PathYCoords
 
         # In order to allow the arm to move in approximately straight lines between 2 points, we will discretize the
         # path taken between two point such that no 2 points along the path are greater than 1 cm
@@ -83,9 +86,7 @@ def set_coordinates_state(x_coord, y_coord):
         start = time.time()
 
         # send serial data to stm32 in format --> <xcoord>A<ycoord>B
-        Msg = "A,"+str(int(Xsteps[i])) +"," + str(int(Ysteps[i]))
-
-        ser.write(bytes(Msg, 'UTF-8'))
+        GoToCoords(Xsteps[i], Ysteps[i])
 
         #same calculation performed on stm32
         ExpectedTime = np.sqrt((Xsteps[i] - prev_X_and_Y[0]) ** 2 + (Ysteps[i] - prev_X_and_Y[1]) ** 2) / speed
@@ -93,9 +94,9 @@ def set_coordinates_state(x_coord, y_coord):
 
         try:
             # convert expected time to float (minimum time is 0.005s)
-            ExpectedTime = max(ExpectedTime, 0.1)
+            ExpectedTime = max(ExpectedTime, 0.005)
         except ValueError:
-            ExpectedTime = 0.1
+            ExpectedTime = 0.005
 
         ser.reset_input_buffer()  # clear input buffer
 
@@ -130,7 +131,7 @@ def set_coordinates_state(x_coord, y_coord):
 def GoToCoords(X, Y):
     Msg = "M," + "{0:0=4d}".format(int(X)) + "," + "{0:0=4d}".format(int(Y))
     #Msg = "{0:0=4d}".format(int(X))
-    print(Msg)
+   # print(Msg)
     ser.write(bytes(Msg, 'UTF-8'))
 
     # while (True):
@@ -247,8 +248,30 @@ def printToBoard():
         canvas.winfo_rooty(),
         canvas.winfo_rootx() + canvas.winfo_width(),
         canvas.winfo_rooty() + canvas.winfo_height()))
-    img = ImageOps.grayscale(img) #turns pic to bit map
-    Img_to_Gcode(img) # convert to GCode
+
+    # turns pic to bit map
+    img = ImageOps.grayscale(img)
+
+    # convert to GCode
+    Curves_X_Cords, Curves_Y_Cords = Img_to_Gcode(img)
+
+    #we should be at (50,120)
+    StowMarker() #make sure marker is stowed
+
+    for i in range(len(Curves_X_Cords)):
+        #move to first point along path
+        FollowPath(Curves_X_Cords[i,0], Curves_Y_Cords[i,0])
+
+        #deploy the marker
+        DeployMarker()
+
+        #follow the curve's path
+        FollowPath(Curves_X_Cords[i], Curves_Y_Cords[i])
+
+        #stow marker
+        StowMarker()
+
+    FollowPath(WaitingCoordinates[0], WaitingCoordinates[1])
 
 root = Tk()
 root.title("Bad Handwriting Who?")
@@ -314,7 +337,7 @@ BitmapInputFrame.pack(fill=BOTH, side=TOP, expand=True)
 RobotControlFrame = Frame(master=root, width=100)
 
 ZeroButton = Button(RobotControlFrame,
-                                   text="Zero Robot Position",
+                                   text="Zero Robot Position (wip)",
                                    command=clearCanvas,
                                    height=4,
                                    fg="black",
@@ -339,7 +362,7 @@ XPosLable = Label(master=XPosFrame, text=' X-Position: ',
                                  font=("Courier", 12, 'bold')).pack(side=LEFT, ipadx=0, padx=0, pady=0)
 XPosEntry = Entry(XPosFrame, width= 5)
 XPosEntry.pack(side=LEFT)
-XPosEntry.insert(0,100)
+XPosEntry.insert(0,WaitingCoordinates[0])
 XPosFrame.pack(side=TOP)
 
 DeployMarkerButton = Button(XPosFrame,
@@ -357,7 +380,7 @@ YPosLabel = Label(master=YPosFrame, text=' Y-Position: ',
                                  font=("Courier", 12, 'bold')).pack(side=LEFT, ipadx=0, padx=0, pady=0)
 YPosEntry = Entry(YPosFrame, width= 5)
 YPosEntry.pack(side=LEFT)
-YPosEntry.insert(0,130)
+YPosEntry.insert(0,WaitingCoordinates[1])
 YPosFrame.pack(side=TOP)
 
 StowMarkerButton = Button(YPosFrame,

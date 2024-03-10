@@ -70,7 +70,7 @@ def Img_to_Gcode(bitmap):
         ax.plot(Curves_X_Cords[i], Curves_Y_Cords[i], linewidth=.7)
 
     plt.show()
-
+    return Curves_X_Cords, Curves_Y_Cords
 
     #print(list(zip(xvals,yvals)))
 # Type alias for a point
