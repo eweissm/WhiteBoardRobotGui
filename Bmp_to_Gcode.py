@@ -27,7 +27,7 @@ def Img_to_Gcode(bitmap):
 
     bmp = potrace.Bitmap(bitmap)  # convert image array  into Pypotrace bitmap object
 
-    path = bmp.trace(turdsize = 0 ,turnpolicy= potrace.TURNPOLICY_BLACK ,alphamax = 1, opticurve =0) # perform trace
+    path = bmp.trace(turdsize = 0 ,turnpolicy= potrace.TURNPOLICY_BLACK ,alphamax = .5, opticurve =1) # perform trace
 
     #lists for discretized points from the trace
     xvals = []
@@ -70,7 +70,7 @@ def Img_to_Gcode(bitmap):
         ax.plot(Curves_X_Cords[i], Curves_Y_Cords[i], linewidth=.7)
 
     plt.show()
-    #print((Curves_X_Cords))
+    print((Curves_X_Cords))
     return Curves_X_Cords, Curves_Y_Cords
 
     #print(list(zip(xvals,yvals)))

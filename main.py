@@ -77,7 +77,6 @@ def FollowPath(PathXCoords, PathYCoords):
 
         time.sleep(2*ExpectedTime)
 
-
         prev_X_and_Y = [Xsteps[i], Ysteps[i]]  # update prev_X_and_Y
 
 
