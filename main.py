@@ -17,7 +17,7 @@ created = [] # Temporary list to hold info on every drag
 image_elements = [] #list contains all image objects used
 shape = "Line" # Shape to draw
 color = "Black" # Color of the shape
-line_width = 3 # Width of the line shape
+line_width = 1 # Width of the line shape
 
 WhiteBoardDimensions = [300, 300]
 
@@ -141,20 +141,28 @@ def GoToCoords(X, Y):
    # print(Msg)
     ser.write(bytes(Msg, 'UTF-8'))
 
-    # while (True):
-    #     if ser.in_waiting:
-    #         print(ser.readline())
-    #         break
+    while (True):
+        if ser.in_waiting:
+            print(ser.readline())
+            break
 
 def DeployMarker():
     Msg = "E,0000,0000"
-    print(Msg)
     ser.write(bytes(Msg, 'UTF-8'))
+
+    while (True):
+        if ser.in_waiting:
+            print(ser.readline())
+            break
 
 def StowMarker():
     Msg = "D,0000,0000"
-    print(Msg)
     ser.write(bytes(Msg, 'UTF-8'))
+
+    while (True):
+        if ser.in_waiting:
+            print(ser.readline())
+            break
 
 # All the functions and logics go here
 #Capture Motions on every mouse position change
@@ -266,27 +274,25 @@ def printToBoard():
     Curves_X_Cords = [[i * (WhiteBoardDimensions[0] / CANVAS_WIDTH) for i in row] for row in Curves_X_Cords]
     Curves_Y_Cords = [[i * (WhiteBoardDimensions[1] / CANVAS_WIDTH) for i in row] for row in Curves_Y_Cords]
 
-    print(Curves_X_Cords, Curves_Y_Cords)
-
     #we should be at (50,120)
-    # StowMarker() #make sure marker is stowed
-    #
-    # for i in range(len(Curves_X_Cords)):
-    #     #move to first point along path
-    #     print(Curves_X_Cords[i][0], Curves_Y_Cords[i][0])
-    #     FollowPath(Curves_X_Cords[i][0], Curves_Y_Cords[i][0])
-    #
-    #     #deploy the marker
-    #     DeployMarker()
-    #
-    #     #follow the curve's path
-    #     FollowPath(Curves_X_Cords[i], Curves_Y_Cords[i])
-    #
-    #     #stow marker
-    #     StowMarker()
-    #
-    # #return marker to waiting spot
-    # FollowPath(WaitingCoordinates[0], WaitingCoordinates[1])
+    StowMarker() #make sure marker is stowed
+
+    for i in range(len(Curves_X_Cords)):
+        #move to first point along path
+        print(Curves_X_Cords[i][0], Curves_Y_Cords[i][0])
+        FollowPath(Curves_X_Cords[i][0], Curves_Y_Cords[i][0])
+
+        #deploy the marker
+        DeployMarker()
+
+        #follow the curve's path
+        FollowPath(Curves_X_Cords[i], Curves_Y_Cords[i])
+
+        #stow marker
+        StowMarker()
+
+    #return marker to waiting spot
+    FollowPath(WaitingCoordinates[0], WaitingCoordinates[1])
 
 root = Tk()
 root.title("Bad Handwriting Who?")
