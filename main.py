@@ -69,9 +69,9 @@ def FollowPath(PathXCoords, PathYCoords):
 
         try:
             # convert expected time to float (minimum time is 0.005s)
-            ExpectedTime = max(ExpectedTime, 0.005)
+            ExpectedTime = max(ExpectedTime, 0.05)
         except ValueError:
-            ExpectedTime = 0.005
+            ExpectedTime = 0.05
 
         print("ExpectedTime: " + str(ExpectedTime))
 
@@ -181,14 +181,13 @@ def FollowPath(PathXCoords, PathYCoords):
 #         prev_X_and_Y = [Xsteps[i], Ysteps[i]]  # update prev_X_and_Y
 def GoToCoords(X, Y):
     Msg = "M," + "{0:0=4d}".format(int(X)) + "," + "{0:0=4d}".format(int(Y))
-    #Msg = "{0:0=4d}".format(int(X))
    # print(Msg)
     ser.write(bytes(Msg, 'UTF-8'))
 
-    # while (True):
-    #     if ser.in_waiting:
-    #         print(ser.readline())
-    #         break
+    while (True):
+        if ser.in_waiting:
+            print(ser.read())
+            break
 
 def DeployMarker():
     Msg = "E,0000,0000"
