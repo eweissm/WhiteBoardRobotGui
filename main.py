@@ -191,7 +191,6 @@ def StowMarker():
             break
     ser.reset_input_buffer()  # clear input buffer
 
-
 # All the functions and logics go here
 #Capture Motions on every mouse position change
 def captureMotion(e=""):
