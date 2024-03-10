@@ -43,56 +43,17 @@ def FollowPath(PathXCoords, PathYCoords):
     #velocity must be same here as in stm32 code
     speed = 50
 
-    try:
-        NumEntries = len(PathXCoords)
-        # handle list / array case
-    except TypeError:  # oops, was a float
-        NumEntries = 1
+    Ysteps = []
+    Xsteps = []
 
-    ser.reset_input_buffer()  # clear input buffer
-
-    for i in range(NumEntries):
-        if NumEntries > 1:
-            thisXCoord = PathXCoords[i]
-            thisYCoord = PathYCoords[i]
-        else:
-            thisXCoord = PathXCoords
-            thisYCoord = PathYCoords
-
-        # In order to allow the arm to move in approximately straight lines between 2 points, we will discretize the
-        # path taken between two point such that no 2 points along the path are greater than 1 cm
-
-        # Length of straight line from current coords to target coords
-        PathLength = np.sqrt((thisXCoord - prev_X_and_Y[0]) ** 2 + (thisYCoord - prev_X_and_Y[1]) ** 2)
-
-        # numberOfPathSteps = math.ceil(PathLength / 1)
-        #
-        # # Find X and Y coordinates along the path --discretize straight line path
-        # if thisXCoord != prev_X_and_Y[0]:
-        #     Xsteps = np.linspace(prev_X_and_Y[0], thisXCoord, numberOfPathSteps)
-        #     if prev_X_and_Y[0] < thisXCoord:
-        #         Ysteps = np.interp(Xsteps, [prev_X_and_Y[0], thisXCoord], [prev_X_and_Y[1], thisYCoord])
-        #     else:
-        #         Ysteps = np.interp(Xsteps, [thisXCoord, prev_X_and_Y[0]], [thisYCoord, prev_X_and_Y[1]])
-        # else:
-        #     Ysteps = np.linspace(prev_X_and_Y[1], thisYCoord, numberOfPathSteps)
-        #     if prev_X_and_Y[1] < thisYCoord:
-        #         Xsteps = np.interp(Ysteps, [prev_X_and_Y[1], thisYCoord], [prev_X_and_Y[0], thisXCoord])
-        #     else:
-        #         Xsteps = np.interp(Ysteps, [thisYCoord, prev_X_and_Y[1]], [thisXCoord, prev_X_and_Y[0]])
-
-    Ysteps = PathYCoords
-    Xsteps = PathXCoords
-        #Xsteps and Ysteps are np arrays of steps that will be taken
+    Xsteps.append(PathXCoords)
+    Ysteps.append(PathYCoords)
 
         #Send moves to stm32
     for i in range(len(Xsteps)):
-
         start = time.time()
-
         # send serial data to stm32
         GoToCoords(int(Xsteps[i]), int(Ysteps[i]))
-
         #same calculation performed on stm32
         ExpectedTime = np.sqrt((Xsteps[i] - prev_X_and_Y[0]) ** 2 + (Ysteps[i] - prev_X_and_Y[1]) ** 2) / speed
 
@@ -105,64 +66,132 @@ def FollowPath(PathXCoords, PathYCoords):
 
         print("ExpectedTime: " + str(ExpectedTime))
 
-        ser.reset_input_buffer()  # clear input buffer
+        time.sleep(5*ExpectedTime)
 
-        # if we get a 'y' from stm32, we move on, otherwise we will wait 0.5 sec. We will repeat this 5 times.
-        # After which, if we still do not have confirmation, we will print to the monitor that there was a problem
-        # and move on
-
-        DidMoveWork = False
-
-        MoveSuccessMessage = ''
-
-        MoveStartTime = time.time()
-
-        while time.time()-MoveStartTime < ExpectedTime*4 and not DidMoveWork:
-            if ser.inWaiting():
-                MoveSuccessMessage = ser.read(1)  # read one bit from buffer
-
-            if MoveSuccessMessage == b'y':
-                DidMoveWork = True
-                print("Move was successful")
-
-        if not DidMoveWork:
-            print("Move was not successful")
-
-        ser.reset_input_buffer()  # clear input buffer
-        end = time.time()
-
-        #print("Difference between expected time and actual time: " + str(end - start - ExpectedTime))
 
         prev_X_and_Y = [Xsteps[i], Ysteps[i]]  # update prev_X_and_Y
 
+
+# def FollowPath(PathXCoords, PathYCoords):
+#     global prev_X_and_Y  # Previous X and Y coordinates
+#
+#     #velocity must be same here as in stm32 code
+#     speed = 50
+#
+#     # try:
+#     #     NumEntries = len(PathXCoords)
+#     #     # handle list / array case
+#     # except TypeError:  # oops, was a float
+#     #     NumEntries = 1
+#
+#     ser.reset_input_buffer()  # clear input buffer
+#
+#     # for i in range(NumEntries):
+#     #     if NumEntries > 1:
+#     #         thisXCoord = PathXCoords[i]
+#     #         thisYCoord = PathYCoords[i]
+#     #     else:
+#     #         thisXCoord = PathXCoords
+#     #         thisYCoord = PathYCoords
+#
+#         # In order to allow the arm to move in approximately straight lines between 2 points, we will discretize the
+#         # path taken between two point such that no 2 points along the path are greater than 1 cm
+#
+#         # Length of straight line from current coords to target coords
+#         # PathLength = np.sqrt((thisXCoord - prev_X_and_Y[0]) ** 2 + (thisYCoord - prev_X_and_Y[1]) ** 2)
+#
+#         # numberOfPathSteps = math.ceil(PathLength / 1)
+#         #
+#         # # Find X and Y coordinates along the path --discretize straight line path
+#         # if thisXCoord != prev_X_and_Y[0]:
+#         #     Xsteps = np.linspace(prev_X_and_Y[0], thisXCoord, numberOfPathSteps)
+#         #     if prev_X_and_Y[0] < thisXCoord:
+#         #         Ysteps = np.interp(Xsteps, [prev_X_and_Y[0], thisXCoord], [prev_X_and_Y[1], thisYCoord])
+#         #     else:
+#         #         Ysteps = np.interp(Xsteps, [thisXCoord, prev_X_and_Y[0]], [thisYCoord, prev_X_and_Y[1]])
+#         # else:
+#         #     Ysteps = np.linspace(prev_X_and_Y[1], thisYCoord, numberOfPathSteps)
+#         #     if prev_X_and_Y[1] < thisYCoord:
+#         #         Xsteps = np.interp(Ysteps, [prev_X_and_Y[1], thisYCoord], [prev_X_and_Y[0], thisXCoord])
+#         #     else:
+#         #         Xsteps = np.interp(Ysteps, [thisYCoord, prev_X_and_Y[1]], [thisXCoord, prev_X_and_Y[0]])
+#
+#     Ysteps = PathYCoords
+#     Xsteps = PathXCoords
+#         #Xsteps and Ysteps are np arrays of steps that will be taken
+#
+#         #Send moves to stm32
+#     for i in range(len(Xsteps)):
+#
+#         start = time.time()
+#
+#         # send serial data to stm32
+#         GoToCoords(int(Xsteps[i]), int(Ysteps[i]))
+#
+#         #same calculation performed on stm32
+#         ExpectedTime = np.sqrt((Xsteps[i] - prev_X_and_Y[0]) ** 2 + (Ysteps[i] - prev_X_and_Y[1]) ** 2) / speed
+#
+#
+#         try:
+#             # convert expected time to float (minimum time is 0.005s)
+#             ExpectedTime = max(ExpectedTime, 0.005)
+#         except ValueError:
+#             ExpectedTime = 0.005
+#
+#         print("ExpectedTime: " + str(ExpectedTime))
+#
+#         # ser.reset_input_buffer()  # clear input buffer
+#         #
+#         # # if we get a 'y' from stm32, we move on, otherwise we will wait 0.5 sec. We will repeat this 5 times.
+#         # # After which, if we still do not have confirmation, we will print to the monitor that there was a problem
+#         # # and move on
+#         #
+#         # DidMoveWork = False
+#         #
+#         # MoveSuccessMessage = ''
+#         #
+#         # MoveStartTime = time.time()
+#         #
+#         # while time.time()-MoveStartTime < ExpectedTime*4 and not DidMoveWork:
+#         #     if ser.inWaiting():
+#         #         MoveSuccessMessage = ser.read(1)  # read one bit from buffer
+#         #
+#         #     if MoveSuccessMessage == b'y':
+#         #         DidMoveWork = True
+#         #         print("Move was successful")
+#         #
+#         # if not DidMoveWork:
+#         #     print("Move was not successful")
+#         #
+#         # ser.reset_input_buffer()  # clear input buffer
+#         # end = time.time()
+#
+#         time.sleep(5*ExpectedTime)
+#
+#         #print("Difference between expected time and actual time: " + str(end - start - ExpectedTime))
+#
+#         prev_X_and_Y = [Xsteps[i], Ysteps[i]]  # update prev_X_and_Y
 def GoToCoords(X, Y):
     Msg = "M," + "{0:0=4d}".format(int(X)) + "," + "{0:0=4d}".format(int(Y))
     #Msg = "{0:0=4d}".format(int(X))
    # print(Msg)
     ser.write(bytes(Msg, 'UTF-8'))
 
-    while (True):
-        if ser.in_waiting:
-            print(ser.readline())
-            break
+    # while (True):
+    #     if ser.in_waiting:
+    #         print(ser.readline())
+    #         break
 
 def DeployMarker():
     Msg = "E,0000,0000"
     ser.write(bytes(Msg, 'UTF-8'))
-
-    while (True):
-        if ser.in_waiting:
-            print(ser.readline())
-            break
+    time.sleep(0.25)
 
 def StowMarker():
     Msg = "D,0000,0000"
     ser.write(bytes(Msg, 'UTF-8'))
+    time.sleep(0.25)
 
-    while (True):
-        if ser.in_waiting:
-            print(ser.readline())
-            break
 
 # All the functions and logics go here
 #Capture Motions on every mouse position change
@@ -271,15 +300,14 @@ def printToBoard():
     Curves_X_Cords, Curves_Y_Cords = Img_to_Gcode(img)
 
     #make sure image has the same dims as the actual white board
-    Curves_X_Cords = [[i * (WhiteBoardDimensions[0] / CANVAS_WIDTH) for i in row] for row in Curves_X_Cords]
-    Curves_Y_Cords = [[i * (WhiteBoardDimensions[1] / CANVAS_WIDTH) for i in row] for row in Curves_Y_Cords]
+    Curves_X_Cords = [[int(i * (WhiteBoardDimensions[0] / CANVAS_WIDTH)) for i in row] for row in Curves_X_Cords]
+    Curves_Y_Cords = [[int(i * (WhiteBoardDimensions[1] / CANVAS_WIDTH)) for i in row] for row in Curves_Y_Cords]
 
     #we should be at (50,120)
     StowMarker() #make sure marker is stowed
 
     for i in range(len(Curves_X_Cords)):
         #move to first point along path
-        print(Curves_X_Cords[i][0], Curves_Y_Cords[i][0])
         FollowPath(Curves_X_Cords[i][0], Curves_Y_Cords[i][0])
 
         #deploy the marker
