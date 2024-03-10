@@ -17,7 +17,7 @@ created = [] # Temporary list to hold info on every drag
 image_elements = [] #list contains all image objects used
 shape = "Line" # Shape to draw
 color = "Black" # Color of the shape
-line_width = 1 # Width of the line shape
+line_width = 3 # Width of the line shape
 
 WhiteBoardDimensions = [300, 300]
 
@@ -40,6 +40,8 @@ prev_X_and_Y = [WaitingCoordinates[0], WaitingCoordinates[1]]
 def FollowPath(PathXCoords, PathYCoords):
     global prev_X_and_Y  # Previous X and Y coordinates
 
+    print(PathXCoords, PathYCoords)
+
     #velocity must be same here as in stm32 code
     speed = 50
 
@@ -53,7 +55,8 @@ def FollowPath(PathXCoords, PathYCoords):
     for i in range(len(Xsteps)):
         start = time.time()
         # send serial data to stm32
-        GoToCoords(int(Xsteps[i]), int(Ysteps[i]))
+        print(Xsteps[i], Ysteps[i])
+        GoToCoords(Xsteps[i], Ysteps[i])
         #same calculation performed on stm32
         ExpectedTime = np.sqrt((Xsteps[i] - prev_X_and_Y[0]) ** 2 + (Ysteps[i] - prev_X_and_Y[1]) ** 2) / speed
 
@@ -66,7 +69,7 @@ def FollowPath(PathXCoords, PathYCoords):
 
         print("ExpectedTime: " + str(ExpectedTime))
 
-        time.sleep(5*ExpectedTime)
+        time.sleep(2*ExpectedTime)
 
 
         prev_X_and_Y = [Xsteps[i], Ysteps[i]]  # update prev_X_and_Y
