@@ -15,7 +15,7 @@ import math
 import PIL.ImageOps
 
 def Img_to_Gcode(bitmap):
-    threshold = 20
+    threshold = 100
 
     bitmap = PIL.ImageOps.invert(bitmap)    #flip colors (makes sure edges arent traced)
 
@@ -70,7 +70,7 @@ def Img_to_Gcode(bitmap):
         ax.plot(Curves_X_Cords[i], Curves_Y_Cords[i], linewidth=.7)
 
     plt.show()
-    print(np.shape(Curves_X_Cords))
+    print((Curves_X_Cords))
     return Curves_X_Cords, Curves_Y_Cords
 
     #print(list(zip(xvals,yvals)))

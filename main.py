@@ -89,8 +89,8 @@ def FollowPath(PathXCoords, PathYCoords):
 
         start = time.time()
 
-        # send serial data to stm32 in format --> <xcoord>A<ycoord>B
-        GoToCoords(Xsteps[i], Ysteps[i])
+        # send serial data to stm32
+        GoToCoords(int(Xsteps[i]), int(Ysteps[i]))
 
         #same calculation performed on stm32
         ExpectedTime = np.sqrt((Xsteps[i] - prev_X_and_Y[0]) ** 2 + (Ysteps[i] - prev_X_and_Y[1]) ** 2) / speed
@@ -102,7 +102,7 @@ def FollowPath(PathXCoords, PathYCoords):
         except ValueError:
             ExpectedTime = 0.005
 
-        print("ExpectedTime: " + ExpectedTime)
+        print("ExpectedTime: " + str(ExpectedTime))
 
         ser.reset_input_buffer()  # clear input buffer
 
@@ -268,7 +268,8 @@ def printToBoard():
 
     for i in range(len(Curves_X_Cords)):
         #move to first point along path
-        FollowPath(Curves_X_Cords(i,0), Curves_Y_Cords(i,0))
+        print(Curves_X_Cords[i][0], Curves_Y_Cords[i][0])
+        FollowPath(Curves_X_Cords[i][0], Curves_Y_Cords[i][0])
 
         #deploy the marker
         DeployMarker()
