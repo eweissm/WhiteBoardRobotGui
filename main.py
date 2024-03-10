@@ -21,7 +21,7 @@ line_width = 3 # Width of the line shape
 
 WhiteBoardDimensions = [300, 300]
 
-CANVAS_WIDTH = 700
+CANVAS_WIDTH = 600
 #canvas will have same AR as the whiteboard
 CANVAS_HEIGHT = (int)(CANVAS_WIDTH * (WhiteBoardDimensions[1]/WhiteBoardDimensions[0]))
 
@@ -65,23 +65,24 @@ def FollowPath(PathXCoords, PathYCoords):
         # Length of straight line from current coords to target coords
         PathLength = np.sqrt((thisXCoord - prev_X_and_Y[0]) ** 2 + (thisYCoord - prev_X_and_Y[1]) ** 2)
 
-        numberOfPathSteps = math.ceil(PathLength / 1)
+        # numberOfPathSteps = math.ceil(PathLength / 1)
+        #
+        # # Find X and Y coordinates along the path --discretize straight line path
+        # if thisXCoord != prev_X_and_Y[0]:
+        #     Xsteps = np.linspace(prev_X_and_Y[0], thisXCoord, numberOfPathSteps)
+        #     if prev_X_and_Y[0] < thisXCoord:
+        #         Ysteps = np.interp(Xsteps, [prev_X_and_Y[0], thisXCoord], [prev_X_and_Y[1], thisYCoord])
+        #     else:
+        #         Ysteps = np.interp(Xsteps, [thisXCoord, prev_X_and_Y[0]], [thisYCoord, prev_X_and_Y[1]])
+        # else:
+        #     Ysteps = np.linspace(prev_X_and_Y[1], thisYCoord, numberOfPathSteps)
+        #     if prev_X_and_Y[1] < thisYCoord:
+        #         Xsteps = np.interp(Ysteps, [prev_X_and_Y[1], thisYCoord], [prev_X_and_Y[0], thisXCoord])
+        #     else:
+        #         Xsteps = np.interp(Ysteps, [thisYCoord, prev_X_and_Y[1]], [thisXCoord, prev_X_and_Y[0]])
 
-        # Find X and Y coordinates along the path --discretize straight line path
-        if thisXCoord != prev_X_and_Y[0]:
-            Xsteps = np.linspace(prev_X_and_Y[0], thisXCoord, numberOfPathSteps)
-            if prev_X_and_Y[0] < thisXCoord:
-                Ysteps = np.interp(Xsteps, [prev_X_and_Y[0], thisXCoord], [prev_X_and_Y[1], thisYCoord])
-            else:
-                Ysteps = np.interp(Xsteps, [thisXCoord, prev_X_and_Y[0]], [thisYCoord, prev_X_and_Y[1]])
-        else:
-            Ysteps = np.linspace(prev_X_and_Y[1], thisYCoord, numberOfPathSteps)
-            if prev_X_and_Y[1] < thisYCoord:
-                Xsteps = np.interp(Ysteps, [prev_X_and_Y[1], thisYCoord], [prev_X_and_Y[0], thisXCoord])
-            else:
-                Xsteps = np.interp(Ysteps, [thisYCoord, prev_X_and_Y[1]], [thisXCoord, prev_X_and_Y[0]])
-
-
+    Ysteps = PathYCoords
+    Xsteps = PathXCoords
         #Xsteps and Ysteps are np arrays of steps that will be taken
 
         #Send moves to stm32
@@ -258,30 +259,34 @@ def printToBoard():
     # turns pic to bit map
     img = ImageOps.grayscale(img)
 
-    #make sure image has the same dims as the actual white board
-    img = img.resize(WhiteBoardDimensions)
     # convert to GCode
     Curves_X_Cords, Curves_Y_Cords = Img_to_Gcode(img)
 
+    #make sure image has the same dims as the actual white board
+    Curves_X_Cords = [[i * (WhiteBoardDimensions[0] / CANVAS_WIDTH) for i in row] for row in Curves_X_Cords]
+    Curves_Y_Cords = [[i * (WhiteBoardDimensions[1] / CANVAS_WIDTH) for i in row] for row in Curves_Y_Cords]
+
+    print(Curves_X_Cords, Curves_Y_Cords)
+
     #we should be at (50,120)
-    StowMarker() #make sure marker is stowed
-
-    for i in range(len(Curves_X_Cords)):
-        #move to first point along path
-        print(Curves_X_Cords[i][0], Curves_Y_Cords[i][0])
-        FollowPath(Curves_X_Cords[i][0], Curves_Y_Cords[i][0])
-
-        #deploy the marker
-        DeployMarker()
-
-        #follow the curve's path
-        FollowPath(Curves_X_Cords[i], Curves_Y_Cords[i])
-
-        #stow marker
-        StowMarker()
-
-    #return marker to waiting spot
-    FollowPath(WaitingCoordinates[0], WaitingCoordinates[1])
+    # StowMarker() #make sure marker is stowed
+    #
+    # for i in range(len(Curves_X_Cords)):
+    #     #move to first point along path
+    #     print(Curves_X_Cords[i][0], Curves_Y_Cords[i][0])
+    #     FollowPath(Curves_X_Cords[i][0], Curves_Y_Cords[i][0])
+    #
+    #     #deploy the marker
+    #     DeployMarker()
+    #
+    #     #follow the curve's path
+    #     FollowPath(Curves_X_Cords[i], Curves_Y_Cords[i])
+    #
+    #     #stow marker
+    #     StowMarker()
+    #
+    # #return marker to waiting spot
+    # FollowPath(WaitingCoordinates[0], WaitingCoordinates[1])
 
 root = Tk()
 root.title("Bad Handwriting Who?")
@@ -328,7 +333,7 @@ FontSizeEntry = Entry(TextParametersFrame, width= 5)
 FontSizeEntry.pack(side=LEFT)
 
 TextValueEntry.insert(0,"Type Text Here")
-FontSizeEntry.insert(0,12)
+FontSizeEntry.insert(0,25)
 
 TextParametersFrame.pack(fill=BOTH, side=TOP, expand=True)
 
