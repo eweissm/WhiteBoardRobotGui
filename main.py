@@ -17,13 +17,13 @@ created = [] # Temporary list to hold info on every drag
 image_elements = [] #list contains all image objects used
 shape = "Line" # Shape to draw
 color = "Black" # Color of the shape
-line_width = 1 # Width of the line shape
+line_width = 3 # Width of the line shape
 
 WhiteBoardDimensions = [300, 300]
 
-CANVAS_WIDTH = 800
+CANVAS_WIDTH = 700
 #canvas will have same AR as the whiteboard
-CANVAS_HEIGHT = np.ceil(CANVAS_WIDTH * (WhiteBoardDimensions[1]/WhiteBoardDimensions[0]))
+CANVAS_HEIGHT = (int)(CANVAS_WIDTH * (WhiteBoardDimensions[1]/WhiteBoardDimensions[0]))
 
 #coordinates workhead returns to when waiting
 WaitingCoordinates = [50, 120]
@@ -268,7 +268,7 @@ def printToBoard():
 
     for i in range(len(Curves_X_Cords)):
         #move to first point along path
-        FollowPath(Curves_X_Cords[i,0], Curves_Y_Cords[i,0])
+        FollowPath(Curves_X_Cords(i,0), Curves_Y_Cords(i,0))
 
         #deploy the marker
         DeployMarker()
