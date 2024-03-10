@@ -129,6 +129,22 @@ def set_coordinates_state(x_coord, y_coord):
 
 def GoToCoords(X, Y):
     Msg = "M," + "{0:0=4d}".format(int(X)) + "," + "{0:0=4d}".format(int(Y))
+    #Msg = "{0:0=4d}".format(int(X))
+    print(Msg)
+    ser.write(bytes(Msg, 'UTF-8'))
+
+    # while (True):
+    #     if ser.in_waiting:
+    #         print(ser.readline())
+    #         break
+
+def DeployMarker():
+    Msg = "E,0000,0000"
+    print(Msg)
+    ser.write(bytes(Msg, 'UTF-8'))
+
+def StowMarker():
+    Msg = "D,0000,0000"
     print(Msg)
     ser.write(bytes(Msg, 'UTF-8'))
 
@@ -328,7 +344,7 @@ XPosFrame.pack(side=TOP)
 
 DeployMarkerButton = Button(XPosFrame,
                                    text="Marker out",
-                                   command=printToBoard,
+                                   command=DeployMarker,
                                    height=1,
                                    fg="black",
                                    width=10,
@@ -346,7 +362,7 @@ YPosFrame.pack(side=TOP)
 
 StowMarkerButton = Button(YPosFrame,
                                    text="Stow Marker",
-                                   command=printToBoard,
+                                   command=StowMarker,
                                    height=1,
                                    fg="black",
                                    width=10,
